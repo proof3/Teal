@@ -8,14 +8,14 @@ TEAL uses the following JSON schema to load text adventures:
 
 ```
 {
-    name: String,
-    start_node: String,
-    nodes: [
+    "name": String,
+    "start_node": String,
+    "nodes": [
         {
-            id: String,
-            prompt: String,
-            options: [
-                { option: String, node_id: String }, ...
+            "id": String,
+            "prompt": String,
+            "options": [
+                { "option": String, "node_id": String }, ...
             ]
         },
         ...
@@ -23,4 +23,4 @@ TEAL uses the following JSON schema to load text adventures:
 }
 ```
 
-Each adventure is graph of connecting nodes that are each identified by a `node_id`. 
+Each adventure is graph of connecting nodes that are each identified by a `node_id`. A node with empty `"options"` is considered to be leaf node that ends an adventure. 
