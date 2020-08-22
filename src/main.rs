@@ -15,7 +15,6 @@ struct TealOption {
 
 #[derive(Serialize, Deserialize)]
 struct TealNode {
-    id      : String, 
     prompt  : String,
     options : Vec<TealOption>
 }
@@ -24,20 +23,11 @@ struct TealNode {
 struct TealSchema {
     name       : String,
     start_node : String,
-    nodes      : Vec<TealNode>
+    nodes      : HashMap<String, TealNode>
 }
 
 // We define a custom result type so that we can deal with errors.
 type TealResult<T> = std::result::Result<T, &'static str>;
-
-fn find_teal_node<'a>(nodes: &'a Vec<TealNode>, id: &'a String) -> TealResult<&'a TealNode> {
-    for node in nodes.iter() {
-        if node.id.eq(id) {
-            return Ok(node);
-        }
-    }
-    return Err("Could not find TEAL node.");
-}
 
 fn teal_prompt<'a>() -> TealResult<u32> {
     let mut selection = String::new();
@@ -60,14 +50,14 @@ fn flush_output() {
     }
 }
 
-fn process_node<'a>(nodes: &'a Vec<TealNode>, node: &'a TealNode) {
+fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
     println!("\n{}", &node.prompt);
 
     let mut option_counter = 1;
     let mut option_map     = HashMap::new();
     for option in node.options.iter() {
         println!("{}: {}", option_counter, &option.option);
-        option_map.insert(option_counter, &option.node_id);
+        option_map.insert(option_counter, option.node_id.to_string());
         option_counter += 1;
     }
 
@@ -107,10 +97,10 @@ fn process_node<'a>(nodes: &'a Vec<TealNode>, node: &'a TealNode) {
 
     match option_map.get(&selected_option) {
         Some(node_id) => {
-            let next_node = find_teal_node(nodes, node_id);
+            let next_node = nodes.get(node_id);
             match next_node {
-                Ok(new_node) => process_node(nodes, new_node),
-                Err(e)       => panic!(e)
+                Some(new_node) => process_node(nodes, new_node),
+                None           => panic!("You selected an invalid option!")
             }
         },
         None => panic!("You selected an invalid option!")
@@ -127,10 +117,10 @@ fn main() -> Result<()> {
     println!("Text Adventure Loaded: {}\n.\n.\n.\n", teal.name);
 
     let story_nodes = teal.nodes;
-    let start_node  = find_teal_node(&story_nodes, &teal.start_node);
+    let start_node  = story_nodes.get(&teal.start_node);
     let result      = match start_node {
-        Ok(node) => node,
-        Err(e)   => panic!(e)
+        Some(node) => node,
+        None       => panic!("Error parsing TEAL file.")
     };
 
     process_node(&story_nodes, result);

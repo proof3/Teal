@@ -10,16 +10,15 @@ TEAL uses the following JSON schema to load text adventures:
 {
     "name": String,
     "start_node": String,
-    "nodes": [
-        {
-            "id": String,
+    "nodes": {
+        "<node_id>": {
             "prompt": String,
             "options": [
                 { "option": String, "node_id": String }, ...
             ]
         },
         ...
-    ]
+    }
 }
 ```
 
