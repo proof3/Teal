@@ -1,0 +1,30 @@
+{
+    "name": "Golem",
+    "start_node": "1",
+    "nodes": {
+        "1": {
+            "prompt": "You are at the entrance of the Island! What will you do?",
+            "options": [
+                { "option": "I don't want to do this! I will leave.", "node_id": "2" },
+                { "option": "Explore the forest in front of you.", "node_id": "3" },
+                { "option": "Explore the river in the distance.", "node_id": "4" }
+            ]
+        },
+        "2": {
+            "prompt": "You have left the Island. No treasure is worth this.",
+            "options": []
+        },
+        "3": {
+            "prompt": "You have entered a dense forest. The sunlight fights against the unrelenting canopy on top.",
+            "options": [
+                { "option": "I'm getting nervous! Heading back.", "node_id": "1" }
+            ]
+        },
+        "4": {
+            "prompt": "The emerald green waters of the river seem seductive and hostile all at once.",
+            "options": [
+                { "option": "I'm getting nervous! Heading back.", "node_id": "1" }
+            ]
+        }
+    }
+}
