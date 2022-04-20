@@ -89,7 +89,7 @@ fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
             },
             Err(e) => {
                 println!("{}", e);
-                print!("Option>");
+                print!("Option> ");
                 flush_output();
             }
         }
@@ -109,6 +109,12 @@ fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
+
+    if args.len() != 2 {
+        println!("Invalid arguments! Please run as follows:\n\n ./teal <PATH_TO_TEAL_FILE>");
+        return Ok(());
+    }
+
     let file_name         = &args[1];
     let contents          = fs::read_to_string(file_name)
                                 .expect("Something went wrong reading the file");
