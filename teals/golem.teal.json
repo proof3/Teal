@@ -3,7 +3,7 @@
     "start_node": "1",
     "nodes": {
         "1": {
-            "prompt": "You are at the entrance of the Island! What will you do?",
+            "prompt": "You are at the entrance of the famed Island. Riches await! What will you do?",
             "options": [
                 { "option": "I don't want to do this! I will leave.", "node_id": "2" },
                 { "option": "Explore the forest in front of you.", "node_id": "3" },
@@ -17,13 +17,42 @@
         "3": {
             "prompt": "You have entered a dense forest. The sunlight fights against the unrelenting canopy on top.",
             "options": [
-                { "option": "I'm getting nervous! Heading back.", "node_id": "1" }
+                { "option": "I'm getting nervous! Heading back.", "node_id": "1" },
+                { "option": "A trail leads deeper into the forest. Follow it.", "node_id": "5" },
+                { "option": "Over to the side, the forest is sparse around a river bank. Go there.", "node_id": "4" }
             ]
         },
         "4": {
             "prompt": "The emerald green waters of the river seem seductive and hostile all at once.",
             "options": [
                 { "option": "I'm getting nervous! Heading back.", "node_id": "1" }
+            ]
+        },
+        "5": {
+            "prompt": "Insects chirp in the background as you make your way across the lush terrain. You start to notice some areas of interest.",
+            "options": [
+                { "option": "An isolated hut seems to be hidden behind a set of trees. Maybe there's someone here? Enter the hut.", "node_id": "6" },
+                { "option": "Up north, mountains are emerging and a trail continues toward them. Continue along the trail", "node_id": "7" },
+                { "option": "Enough sight seeing, something seems off! Head back.", "node_id": "1" }
+            ]
+        },
+        "6": {
+            "prompt": "The hut is silent. As you enter, you are startled by a figure seated in what looks to be a throne.\nYou realize it is the dead remains of an unfortunate treasure hunter.",
+            "options": [
+                { "option": "Examine the dead body.", "node_id": "8" },
+                { "option": "Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "7": {
+            "prompt": "You are the entering the rocky core of this island. A monolith in front of you has an opening to a large cave.",
+            "options": [
+                { "option": "Nothing to see here. Head back.", "node_id": "5" }
+            ]
+        },
+        "8": {
+            "prompt": "The body is pierced by what looks to be large spear tiggered by being seated on the throne.\nYou find a letter on the body. It reads: 'Greed is a lever.'",
+            "options": [
+                { "option": "Greed did this person no good. Exit the hut.", "node_id": "5" }
             ]
         }
     }
