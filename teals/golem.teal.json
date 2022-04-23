@@ -37,9 +37,12 @@
             ]
         },
         "6": {
-            "prompt": "The hut is silent. As you enter, you are startled by a figure seated in what looks to be a throne.\nYou realize it is the dead remains of an unfortunate treasure hunter.",
+            "prompt": "You look around the hut. There's a figure seated in what looks to be a throne and an assortment of furniture and equipment.",
             "options": [
-                { "option": "Examine the dead body.", "node_id": "8" },
+                { "option": "Examine the throne.", "node_id": "8" },
+                { "option": "Examine the fire place ahead of the throne.", "node_id": "10" },
+                { "option": "Examine the desk in the corner.", "node_id": "11" },
+                { "option": "Examine the pile of equipment in the center of the hut.", "node_id": "13" },
                 { "option": "Exit the hut.", "node_id": "5" }
             ]
         },
@@ -50,9 +53,46 @@
             ]
         },
         "8": {
-            "prompt": "The body is pierced by what looks to be large spear tiggered by being seated on the throne.\nYou find a letter on the body. It reads: 'Greed is a lever.'",
+            "prompt": "On the throne are the dead remains of an unfortunate treasure hunter.\nThe body is pierced by what looks to be large spear tiggered by being seated on the throne.",
             "options": [
-                { "option": "Greed did this person no good. Exit the hut.", "node_id": "5" }
+                { "option": "Inspect the body.", "node_id": "9" },
+                { "option": "This does not look good. Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "9": {
+            "prompt": "You find a letter on the body. It reads:\n\n'Wanderer, you may roam this island freely and keep whatever you may find, but be warned!\nGreed is a lever that may move the world toward fortune or doom.'",
+            "options": [
+                { "option": "Continue to look around the hut.", "node_id": "6" },
+                { "option": "Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "10": {
+            "prompt": "The fire place seems to generate heat even though there is no fire.\nThere is an engraving in the mantle that reads:\n\n'Dominion of Yossele'.",
+            "options": [
+                { "option": "Continue to look around the hut.", "node_id": "6" },
+                { "option": "Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "11": {
+            "prompt": "Papers are strewn on the desk. You see a news clipping that looks interesting in the mess.",
+            "options": [
+                { "option": "Read the news clipping.", "node_id": "12" },
+                { "option": "Continue to look around the hut.", "node_id": "6" },
+                { "option": "Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "12": {
+            "prompt": "The news clipping reads:\n\n'Late eccentric billionaire, Balthazar Maharel had instituted the hunt, an open invitation to participants around the world to uncover riches on a remote island in the mediterranean.\nWe are learning that Maharel willed his fortune to fund the foundation that will be administering the hunt as an ongoing competition.\nEven those close to the late Maharel are puzzled by his will...'",
+            "options": [
+                { "option": "Continue to look around the hut.", "node_id": "6" },
+                { "option": "Exit the hut.", "node_id": "5" }
+            ]
+        },
+        "13": {
+            "prompt": "There are an assortment of items in the pile and strewn across the floor.",
+            "options": [
+                { "option": "Pick up the map.", "node_id": "13" },
+                { "option": "Exit the hut.", "node_id": "5" }
             ]
         }
     }
