@@ -51,7 +51,7 @@ fn flush_output() {
 }
 
 fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
-    println!("\n{}", &node.prompt);
+    println!("\n{}\n", &node.prompt);
 
     let mut option_counter = 1;
     let mut option_map     = HashMap::new();
