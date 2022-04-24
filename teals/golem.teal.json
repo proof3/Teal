@@ -91,7 +91,7 @@
         "13": {
             "prompt": "There are an assortment of items in the pile and strewn across the floor.",
             "options": [
-                { "option": "Pick up the map.", "node_id": "13" },
+                { "option": "Pick up the map.", "node_id": "13", "state_change": { "map": true } },
                 { "option": "Exit the hut.", "node_id": "5" }
             ]
         }
