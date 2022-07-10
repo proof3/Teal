@@ -19,7 +19,11 @@
             "options": [
                 { "option": "I'm getting nervous! Heading back.", "node_id": "1" },
                 { "option": "A trail leads deeper into the forest. Follow it.", "node_id": "5" },
-                { "option": "Over to the side, the forest is sparse around a river bank. Go there.", "node_id": "4" }
+                { "option": "Over to the side, the forest is sparse around a river bank. Go there.", "node_id": "4" },
+                { "option": "You have a map, use it to navigate to the entrance.",
+                  "state_required": { "map": true },
+                  "node_id": "1"
+                }
             ]
         },
         "4": {

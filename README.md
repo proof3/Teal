@@ -41,7 +41,7 @@ TEAL Schemas support the introduction of state for more complex adventures. Stat
 { "option": String, "node_id": String, "state_change": Object }
 ```
 
-where the object can be an arbitrary JSON object with key-value pairs. In order to make a node's prompt or options dependent on some state, we can use the `state_required` parameter like so:
+where the object can be an arbitrary JSON object with key-value pairs. In order to make a node's options dependent on some state, we can use the `state_required` parameter like so:
 
 ```
 {
@@ -51,10 +51,8 @@ where the object can be an arbitrary JSON object with key-value pairs. In order 
         "<node_id>": {
             "prompt": String,
             "options": [
-                { "option": String, "node_id": String, "state_change": Object, "state_required": Object }, ...
-            ],
-            "state_based_prompts": [
-                { "prompt": String, "state_required": Object }
+                { "option": String, "node_id": String, "state_change": Object, "state_required": Object },
+                { "option": String, "state_required": Object, "node_id": String }
             ]
         },
         ...

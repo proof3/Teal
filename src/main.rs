@@ -12,20 +12,14 @@ use serde_json::Value;
 struct TealOption {
     option  : String,
     node_id : String,
-    state_change : Option<Value>
-}
-
-#[derive(Serialize, Deserialize)]
-struct StateBasedPrompt {
-    prompt : String,
-    state_required : Value
+    state_change : Option<Value>,
+    state_required : Option<Value>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct TealNode {
     prompt  : String,
-    options : Vec<TealOption>,
-    state_based_prompts : Option<Vec<StateBasedPrompt>>
+    options : Vec<TealOption>
 }
 
 #[derive(Serialize, Deserialize)]
@@ -62,23 +56,41 @@ fn flush_output() {
 fn process_node<'a>(nodes: &'a HashMap<String, TealNode>,
                     node: &'a TealNode,
                     game_state: &mut HashMap<String, Value>) {
-    // Process state based prompts if they are present and use the first match
-    let state_based_prompts = &node.state_based_prompts;
-    match state_based_prompts {
-        Some(_state_based_prompts) => {
-        }
-        None => {}, // No-op
-    }
-
-
-    println!("\n{}\n", &node.prompt);
 
     let mut option_counter = 1;
     let mut option_map : HashMap<u32, &TealOption> = HashMap::new();
+    println!("\n{}\n", &node.prompt);
+
     for option in node.options.iter() {
-        println!("{}: {}", option_counter, &option.option);
-        option_map.insert(option_counter, option);
-        option_counter += 1;
+        let state_required = &option.state_required;
+        match state_required {
+            Some(state) => {
+                let mut state_matches = true;
+                for (key, value) in state.as_object().unwrap() {
+                    match game_state.get(key) {
+                        Some(game_state_value) => {
+                            if value != game_state_value {
+                                state_matches = false;
+                            }
+                        },
+                        None => {
+                            state_matches = false;
+                        }
+                    }
+                }
+
+                if state_matches {
+                    println!("{}: {}", option_counter, &option.option);
+                    option_map.insert(option_counter, option);
+                    option_counter += 1;
+                }
+            },
+            None => {
+                println!("{}: {}", option_counter, &option.option);
+                option_map.insert(option_counter, option);
+                option_counter += 1;
+            },
+        }
     }
 
     if option_map.is_empty() {
