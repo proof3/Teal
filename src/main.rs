@@ -1,22 +1,31 @@
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::io::{self, Write};
-use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Result;
+use serde_json::Value;
 
 // TEAL Schema.
 #[derive(Serialize, Deserialize)]
 struct TealOption {
     option  : String,
-    node_id : String
+    node_id : String,
+    state_change : Option<Value>
+}
+
+#[derive(Serialize, Deserialize)]
+struct StateBasedPrompt {
+    prompt : String,
+    state_required : Value
 }
 
 #[derive(Serialize, Deserialize)]
 struct TealNode {
     prompt  : String,
-    options : Vec<TealOption>
+    options : Vec<TealOption>,
+    state_based_prompts : Option<Vec<StateBasedPrompt>>
 }
 
 #[derive(Serialize, Deserialize)]
@@ -50,14 +59,25 @@ fn flush_output() {
     }
 }
 
-fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
+fn process_node<'a>(nodes: &'a HashMap<String, TealNode>,
+                    node: &'a TealNode,
+                    game_state: &mut HashMap<String, Value>) {
+    // Process state based prompts if they are present and use the first match
+    let state_based_prompts = &node.state_based_prompts;
+    match state_based_prompts {
+        Some(_state_based_prompts) => {
+        }
+        None => {}, // No-op
+    }
+
+
     println!("\n{}\n", &node.prompt);
 
     let mut option_counter = 1;
-    let mut option_map     = HashMap::new();
+    let mut option_map : HashMap<u32, &TealOption> = HashMap::new();
     for option in node.options.iter() {
         println!("{}: {}", option_counter, &option.option);
-        option_map.insert(option_counter, option.node_id.to_string());
+        option_map.insert(option_counter, option);
         option_counter += 1;
     }
 
@@ -96,10 +116,23 @@ fn process_node<'a>(nodes: &'a HashMap<String, TealNode>, node: &'a TealNode) {
     }
 
     match option_map.get(&selected_option) {
-        Some(node_id) => {
-            let next_node = nodes.get(node_id);
+        Some(option) => {
+            // Apply state change.
+            let state_change = &option.state_change;
+            match state_change {
+                Some(state) => {
+                    // println!("Found the following state...");
+                    for (key, value) in state.as_object().unwrap() {
+                        // println!("{:?} ===> {:?}", key, value);
+                        game_state.insert(key.to_string(), value.clone());
+                    }
+                }
+                None        => println!("Found no state"),
+            }
+            // Map to next node.
+            let next_node = nodes.get(&option.node_id);
             match next_node {
-                Some(new_node) => process_node(nodes, new_node),
+                Some(new_node) => process_node(nodes, new_node, game_state),
                 None           => panic!("You selected an invalid option!")
             }
         },
@@ -129,6 +162,8 @@ fn main() -> Result<()> {
         None       => panic!("Error parsing TEAL file.")
     };
 
-    process_node(&story_nodes, result);
+    let mut game_state: HashMap<String, Value> = HashMap::new();
+
+    process_node(&story_nodes, result, &mut game_state);
     Ok(())
 }
