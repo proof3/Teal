@@ -1,4 +1,4 @@
-// use wasm_bindgen::prelude::*;
+use wasm_bindgen::prelude::*;
 
 use std::collections::HashMap;
 use std::collections::BTreeMap;
@@ -8,6 +8,7 @@ use serde_json::Value;
 
 // TEAL Schema.
 #[derive(Serialize, Deserialize)]
+#[derive(Clone)]
 pub struct TealOption {
     pub option  : String,
     pub node_id : String,
@@ -66,10 +67,10 @@ pub fn build_option_map<'a>(node: &'a TealNode,
     return option_map;
 }
 
-pub fn process_node<'a>(nodes: &'a HashMap<String, TealNode>,
-                        game_state: &mut HashMap<String, Value>,
-                        selection: u32,
-                        option_map: &BTreeMap<u32, &TealOption>) -> Option<&'a TealNode> {
+pub fn process_node(nodes: &HashMap<String, TealNode>,
+                    game_state: &mut HashMap<String, Value>,
+                    selection: u32,
+                    option_map: &BTreeMap<u32, &TealOption>) -> Option<String> {
 
     if !option_map.contains_key(&selection) {
         return None;
@@ -88,8 +89,34 @@ pub fn process_node<'a>(nodes: &'a HashMap<String, TealNode>,
                 None        => (),
             }
             // Map to next node.
-            return nodes.get(&option.node_id);
+
+            match nodes.get(&option.node_id) {
+                Some(node) => {
+                    return Some(String::from(&node.prompt));
+                }
+                None => None,
+            }
         },
         None => None
     }
+}
+
+#[wasm_bindgen]
+pub fn process_node_js(nodes: JsValue, game_state: JsValue, selection: JsValue) -> Option<String> {
+    let r_nodes: HashMap<String, TealNode> = serde_wasm_bindgen::from_value(nodes).unwrap();
+    let mut r_game_state: HashMap<String, Value> = serde_wasm_bindgen::from_value(game_state).unwrap();
+    let r_selection: String = serde_wasm_bindgen::from_value(selection).unwrap();
+    let u32_selection = match r_selection.trim().parse::<u32>() {
+        Ok(number) => number,
+        Err(_e)    => panic!("Error processing TEAL selection!")
+    };
+    
+    let node = match r_nodes.get(&r_selection) {
+        Some(node) => node,
+        None       => panic!("Error processing TEAL graph!")
+    };
+
+    let option_map = build_option_map(&node, &r_game_state);
+
+    return process_node(&r_nodes, &mut r_game_state, u32_selection, &option_map);
 }

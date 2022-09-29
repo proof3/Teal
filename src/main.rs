@@ -107,7 +107,11 @@ fn main() -> Result<()> {
         let selection = prompt_to_select(&option_map);
 
         // 3. Process selection
-        cur_node = match process_node(&story_nodes, &mut game_state, selection, &option_map) {
+        let cur_node_id = match process_node(&story_nodes, &mut game_state, selection, &option_map) {
+            Some(id) => id,
+            None => panic!("Error processing TEAL graph!")
+        };
+        cur_node = match story_nodes.get(&cur_node_id) {
             Some(node) => node,
             None       => panic!("Error processing TEAL graph!")
         };

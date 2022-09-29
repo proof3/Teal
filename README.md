@@ -4,12 +4,19 @@ A simple Rust program that allows one to play text adventures.
 
 ## Usage
 
+### Run as CLI program
+
 * [Install rust](https://www.rust-lang.org/tools/install).
 * Build and run with a TEAL adventure:
 
 ```
 $cargo build && cargo run <PATH_TO_TEAL_FILE>
 ```
+
+### Build into WASM
+
+* Install `wasm-pack`: `cargo install wasm-pack`
+* Run `wasm-pack build --target web`
 
 ## TEAL Schemas
 
