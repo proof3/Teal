@@ -89,12 +89,11 @@ pub fn process_node(nodes: &HashMap<String, TealNode>,
                 None        => (),
             }
             // Map to next node.
-
-            match nodes.get(&option.node_id) {
-                Some(node) => {
-                    return Some(String::from(&node.prompt));
-                }
-                None => None,
+            if nodes.contains_key(&option.node_id) {
+                return Some(String::from(&option.node_id));
+            }
+            else {
+                return None;
             }
         },
         None => None
