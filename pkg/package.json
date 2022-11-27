@@ -1,0 +1,15 @@
+{
+  "name": "teal",
+  "collaborators": [
+    "Murtuza Kainan <murtuzakainan@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "teal_bg.wasm",
+    "teal.js",
+    "teal.d.ts"
+  ],
+  "module": "teal.js",
+  "types": "teal.d.ts",
+  "sideEffects": false
+}

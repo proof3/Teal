@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Teal"
+    />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <style type="text/css">
+      :root {
+        --main-bg-color:   #262626;
+        --promot-bg-color: #0E0A0A;
+        --prompt-color: #44ffd1;
+        --option-color: #00a6fb;
+        --select-color: #ff6663;
+      }
+
+      body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      html, body {
+          height: 100%;
+          width: 100%;
+          font-family: Menlo, ui-monospace;
+          background-color: var(--main-bg-color);
+          display: flex;
+          flex-direction: row;
+      }
+
+      #teal-ui {
+        margin-top: 2em;
+        margin-left: 5%;
+        margin-right: 5%;
+        color: var(--prompt-color);
+        width: 90%;
+      }
+
+      #teal-prompt {
+        font-size: 2em;
+        width: 100%;
+      }
+
+      #teal-options {
+        margin-top: 1em;
+        margin-left: 3%;
+        color: var(--option-color);
+      }
+
+      #teal-options div {
+        background-color: var(--promot-bg-color);
+        font-size: 1em;
+        max-width: 94%;
+        padding: .5rem .5rem .5rem .5rem;
+        border-radius: .5rem;
+        margin-bottom: 0.2em;
+        border-width: medium;
+        border-style: solid;
+        border-color: var(--promot-bg-color);
+      }
+
+      #teal-options div:hover {
+        color: var(--select-color);
+        cursor: pointer;
+        background-color: var(--main-bg-color);
+        border-color: var(--promot-bg-color);
+        border-width: medium;
+        border-style: solid;
+      }
+
+      @keyframes merctronPalette {
+        0% {
+          color: #fffaf2;
+        }
+        25% {
+          color: #fffaf2;
+        }
+        50% {
+          color: #006e90;
+        }
+        75% {
+          color: #bf1363;
+        }
+        100% {
+          color: #fffaf2;
+        }
+      }
+
+      /* The typing effect */
+      @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+      }
+
+    </style>
+
+    <script type="module" type="text/javascript">
+        import init, { process_node_js } from "./pkg/teal.js";
+        await init();
+
+        function tealLoop(story_nodes, game_state, node_selection, next) {
+            console.log("Processing selection...");
+            // Process node selection
+            let res = process_node_js(story_nodes, game_state, node_selection);
+            // Build UI for processing result
+            next(story_nodes, game_state, node_selection);
+        }
+
+        function buildTealSelectionPrompt(story_nodes, game_state, node_selection) {
+            console.log("Building selection...");
+            // Set prompt
+            const { prompt, options } = story_nodes.get(node_selection);
+            document.getElementById("teal-prompt").innerHTML = prompt;
+
+            // Create options
+            document.getElementById("teal-options").innerHTML = "";
+            if (options.length === 0) {
+                const optionDiv = document.createElement("div");
+                optionDiv.innerHTML = "Your adventure has ended. Return to the menu.";
+
+                optionDiv.addEventListener("click", buildMenu);
+                document.getElementById("teal-options").appendChild(optionDiv);
+            }
+            options.forEach(({option, node_id, state_required}) => {
+                // Todo: handle state
+                if (state_required) return;
+                const optionDiv = document.createElement("div");
+                optionDiv.innerHTML = option;
+
+                optionDiv.addEventListener("click", tealLoop.bind(
+                    null, story_nodes, game_state, node_id, buildTealSelectionPrompt));
+                document.getElementById("teal-options").appendChild(optionDiv);
+            });
+        }
+
+        function startTeal(tealData) {
+            const {name, start_node, nodes} = tealData;
+            const story_nodes = new Map();
+            const game_state  = new Map();
+            Object.keys(nodes).forEach((key) => story_nodes.set(key, nodes[key]));
+            buildTealSelectionPrompt(story_nodes, game_state, start_node);
+        }
+
+        async function fetchAndStartTeal(tealFile) {
+            const res = await fetch(tealFile);
+            const tealJson = JSON.parse(await res.text());
+            startTeal(tealJson);
+        }
+
+        function buildMenu() {
+            document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
+            document.getElementById("teal-options").innerHTML = "";
+            
+            const optionDiv = document.createElement("div");
+            optionDiv.innerHTML = "Play Golem";
+
+            optionDiv.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/golem.teal.json"));
+            document.getElementById("teal-options").appendChild(optionDiv);
+        }
+
+        buildMenu();
+    </script>
+    <title>TEAL</title>
+  </head>
+  <body>
+    <div id="teal-ui">
+        <div id="teal-prompt"></div>
+        <div id="teal-options">
+        </div>
+    </div>
+  </body>
+</html>
