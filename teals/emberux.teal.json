@@ -1,0 +1,14 @@
+{
+    "name": "Emberux",
+    "start_node": "1",
+    "nodes": {
+        "1": {
+            "prompt": "Welcome to the land of Emberux! Watch your step, danger lies in every corner. Everyone here is in pursuit of the sacred flame. What is your craft?",
+            "options": [
+                { "option": "Spellcaster", "node_id": "1" },
+                { "option": "Warrior", "node_id": "1" },
+                { "option": "Assasin", "node_id": "1" }
+            ]
+        }
+    }
+}

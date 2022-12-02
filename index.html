@@ -194,12 +194,19 @@
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
             document.getElementById("teal-options").innerHTML = "";
             
-            const optionDiv = document.createElement("div");
-            optionDiv.innerHTML = "Play Golem";
+            const optionDivOne = document.createElement("div");
+            const optionDivTwo = document.createElement("div");
+            
+            optionDivOne.innerHTML = "Play Golem";
+            optionDivTwo.innerHTML = "Play Emberux";
 
-            optionDiv.addEventListener("click", fetchAndStartTeal.bind(
+            optionDivOne.addEventListener("click", fetchAndStartTeal.bind(
                 null, "/teals/golem.teal.json"));
-            document.getElementById("teal-options").appendChild(optionDiv);
+            document.getElementById("teal-options").appendChild(optionDivOne);
+
+            optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/emberux.teal.json"));
+            document.getElementById("teal-options").appendChild(optionDivTwo);
         }
 
         buildMenu();
