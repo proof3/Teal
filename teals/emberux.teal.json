@@ -5,9 +5,108 @@
         "1": {
             "prompt": "Welcome to the land of Emberux! Watch your step, danger lies in every corner. Everyone here is in pursuit of the sacred flame. What is your craft?",
             "options": [
-                { "option": "Spellcaster", "node_id": "1" },
-                { "option": "Warrior", "node_id": "1" },
-                { "option": "Assasin", "node_id": "1" }
+                { "option": "Spellcaster", "node_id": "2", "state_change": {"charecter_type": "Spellcaster"}},
+                { "option": "Warrior", "node_id": "3", "state_change": {"charecter_type": "Warior"}},
+                { "option": "Assasin", "node_id": "4", "state_change": {"charecter_type": "Assasin"}}
+            ]
+        },
+        "2": {
+            "prompt": "What are your powers?",
+            "options": [
+                { "option" : "Phychokinesis", "node_id": "5", "state_change": { "spellOne": "Manipulation" }},
+                { "option": "Mind control", "node_id": "6", "state_change": { "spellOne": "Mind control"}},
+                { "option": "Pyrokinesis", "node_id": "7", "state_change": { "spellOne": "Pyrokinesis"}},
+                { "option": "Transmutation", "node_id": "8", "state_change": { "spellOne": "Transmutation"}}
+            ]
+        },
+        "3" : {
+            "prompt": "What is your weapon of choice?",
+            "options" : [
+                { "option" : "Sword and shield of the Nether.", "node_id": "9", "state_change": {"weapon": "Sword and shield"}},
+                { "option": "Bow and arrows of lightning.", "node_id": "10", "state_change": {"weapon": "Bow and arrow"}},
+                { "option": "Scorched Axe.", "node_id": "11", "state_change": {"weapon": "Axe"}},
+                { "option": "Gauntlets of Destruction.", "node_id": "12", "state_change": {"weapon": "Guantlets"}}
+            ]
+        },
+        "4" : {
+            "prompt": "What is your method?",
+            "options": [
+                { "option": "Poison", "node_id": "13", "state_change": {"weapons": ["darts", "dagger", "sword"], "ability": "Poison"}},
+                { "option": "Swiftness", "node_id": "14", "state_change": {"weapons": ["darts", "dagger", "sword"], "ability": "Swiftness"}},
+                {"option": "Chameleon", "node_id": "15", "state_change": {"weapons": ["darts", "dagger", "sword"], "ability": "Chameleon"}}
+            ]
+
+        },
+        "5" : {
+            "prompt": "You can cast the spell of Phychokinesis, which allows you to control objects with your mind, different spells will allow you different sorts on manipulation, For now you can only Physcokenesis.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "6" : {
+            "prompt": "You can cast the spell of Mind Control, which allows you to control Peoples minds in a limited capacity, different spells will allow you different sorts on manipulation, For now you can only Mind Control.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "7" : {
+            "prompt": "You can cast the spell of Pyrokinesis, which allows you to control flames, different spells will allow you different sorts on manipulation, For now you can only Pyrokenesis.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "8" : {
+            "prompt": "You can cast the spell of Transumtation, which allows you to transform objects to other objects, different spells will allow you different sorts on manipulation, For now you can only Transmutation.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "9" : {
+            "prompt": "You Have the Sword and Shield of the Nether. They allow the weilder freeze an enemey after every 5 hits in combat. You will find more abilities with this weapon in the future.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "10" : {
+            "prompt": "You Have the Bow and arrows of lightning. They allow to the weilder to shoot arows charged with electricity at an enemey after every 5 hits in combat. You will find more abilities with this weapon in the future.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "11" : {
+            "prompt": "You Have the Scorched Axe. The Scorched Axe will become red hot after every 5 hits in combat, allowing the weilder to cut through anything. You will find more abilities with this weapon in the future.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "12" : {
+            "prompt": "You Have the Gauntlets of Destruction. They allow to the weilder to bombard any enemy in contact after every 5 hits in combat. You will find more abilities with this weapon in the future.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16"}
+            ]
+        },
+        "13" : {
+            "prompt": "You kill with poison. You can use a poison that can paralyze.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16", "state_change" : {"poisonOne": "Paralysis"}}
+            ]
+        },
+        "14" : {
+            "prompt": "You kill with Swiftness. You can instantly kill if you are less than or equal to a range of 5 meters.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16", "state_change" : {"Swiftness": "5"}}
+            ]
+        },
+        "15" : {
+            "prompt": "You kill with the art of the chameleon. You can dissapear for 10 seconds at a time.",
+            "options" :[
+                {"option" : "Continue", "node_id": "16", "state_change" : {"invisibilTime": "10"}}
+            ]
+        },
+        "16" :{
+            "prompt": "You stand at the edge of Emberux.",
+            "options" :[
+                {"option": "Go back to charecter select", "node_id": "1"}
             ]
         }
     }
