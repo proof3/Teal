@@ -46,11 +46,33 @@
           font-family: Menlo, ui-monospace;
           background-color: var(--main-bg-color);
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
+      }
+
+      .Nav {
+        background-color:#0E0A0A;
+        text-align: center;
+        width: 100%;
+        min-height: 2.5em;
+        padding-top: 10px;
+      }
+
+      .Nav a{
+        font-size: 1.5em;
+        color:#fffaf2;
+      }
+
+      .Nav a:link {
+        text-decoration: none;
+      }
+
+      .Nav a:hover {
+        color: whitesmoke;
+        font-weight: bold;
       }
 
       #teal-ui {
-        margin-top: 2em;
+        margin-top: 1%;
         margin-left: 5%;
         margin-right: 5%;
         color: var(--prompt-color);
@@ -172,12 +194,19 @@
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
             document.getElementById("teal-options").innerHTML = "";
             
-            const optionDiv = document.createElement("div");
-            optionDiv.innerHTML = "Play Golem";
+            const optionDivOne = document.createElement("div");
+            const optionDivTwo = document.createElement("div");
+            
+            optionDivOne.innerHTML = "Play Golem";
+            optionDivTwo.innerHTML = "Play Emberux";
 
-            optionDiv.addEventListener("click", fetchAndStartTeal.bind(
+            optionDivOne.addEventListener("click", fetchAndStartTeal.bind(
                 null, "/teals/golem.teal.json"));
-            document.getElementById("teal-options").appendChild(optionDiv);
+            document.getElementById("teal-options").appendChild(optionDivOne);
+
+            optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/emberux.teal.json"));
+            document.getElementById("teal-options").appendChild(optionDivTwo);
         }
 
         buildMenu();
@@ -185,6 +214,9 @@
     <title>TEAL</title>
   </head>
   <body>
+    <nav class="Nav">
+      <a href="" id="navbar"> TEAL</a>
+    </nav>
     <div id="teal-ui">
         <div id="teal-prompt"></div>
         <div id="teal-options">
