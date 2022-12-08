@@ -141,18 +141,23 @@
         import init, { process_node_js } from "./pkg/teal.js";
         await init();
 
-        function tealLoop(story_nodes, game_state, node_selection, next) {
-            console.log("Processing selection...");
+        function tealLoop(story_nodes, game_state, node_id, node_selection, next) {
+            console.log("Processing selection for node ", node_id, ", selection ", node_selection);
             // Process node selection
-            let res = process_node_js(story_nodes, game_state, node_selection);
+            const { result, state, options } = process_node_js(story_nodes, game_state, node_id, node_selection);
+
+            console.log("Result is:", result);
+            console.log("Game state is: ", [...state.entries()]);
+            console.log("Next option map is: ", [...options.entries()]);
+
             // Build UI for processing result
-            next(story_nodes, game_state, node_selection);
+            next(story_nodes, state, result, Array.from(options.values()));
         }
 
-        function buildTealSelectionPrompt(story_nodes, game_state, node_selection) {
-            console.log("Building selection...");
+        function buildTealSelectionPrompt(story_nodes, game_state, node_selection, options) {
+            console.log("Building selection for node: ", node_selection);
             // Set prompt
-            const { prompt, options } = story_nodes.get(node_selection);
+            const { prompt } = story_nodes.get(node_selection);
             document.getElementById("teal-prompt").innerHTML = prompt;
 
             // Create options
@@ -164,15 +169,15 @@
                 optionDiv.addEventListener("click", buildMenu);
                 document.getElementById("teal-options").appendChild(optionDiv);
             }
+            let optionCounter = 1;
             options.forEach(({option, node_id, state_required}) => {
-                // Todo: handle state
-                if (state_required) return;
                 const optionDiv = document.createElement("div");
                 optionDiv.innerHTML = option;
 
                 optionDiv.addEventListener("click", tealLoop.bind(
-                    null, story_nodes, game_state, node_id, buildTealSelectionPrompt));
+                    null, story_nodes, game_state, node_selection, optionCounter, buildTealSelectionPrompt));
                 document.getElementById("teal-options").appendChild(optionDiv);
+                optionCounter++;
             });
         }
 
@@ -180,8 +185,10 @@
             const {name, start_node, nodes} = tealData;
             const story_nodes = new Map();
             const game_state  = new Map();
+            game_state.set("foo", "bar");
             Object.keys(nodes).forEach((key) => story_nodes.set(key, nodes[key]));
-            buildTealSelectionPrompt(story_nodes, game_state, start_node);
+            buildTealSelectionPrompt(
+              story_nodes, game_state, start_node, story_nodes.get(start_node).options);
         }
 
         async function fetchAndStartTeal(tealFile) {

@@ -3,20 +3,20 @@
 /**
 * @param {any} nodes
 * @param {any} game_state
+* @param {any} node_id
 * @param {any} selection
-* @returns {string | undefined}
+* @returns {any}
 */
-export function process_node_js(nodes: any, game_state: any, selection: any): string | undefined;
+export function process_node_js(nodes: any, game_state: any, node_id: any, selection: any): any;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly process_node_js: (a: number, b: number, c: number, d: number) => void;
+  readonly process_node_js: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
-  readonly __wbindgen_free: (a: number, b: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 
