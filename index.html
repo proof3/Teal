@@ -185,7 +185,6 @@
             const {name, start_node, nodes} = tealData;
             const story_nodes = new Map();
             const game_state  = new Map();
-            game_state.set("foo", "bar");
             Object.keys(nodes).forEach((key) => story_nodes.set(key, nodes[key]));
             buildTealSelectionPrompt(
               story_nodes, game_state, start_node, story_nodes.get(start_node).options);
