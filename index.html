@@ -140,6 +140,7 @@
     <script type="module" type="text/javascript">
         import init, { process_node_js } from "./pkg/teal.js";
         await init();
+        let files;
 
         function tealLoop(story_nodes, game_state, node_id, node_selection, next) {
             console.log("Processing selection for node ", node_id, ", selection ", node_selection);
@@ -186,7 +187,6 @@
             const {name, start_node, nodes} = tealData;
             const story_nodes = new Map();
             const game_state  = new Map();
-            game_state.set("foo", "bar");
             Object.keys(nodes).forEach((key) => story_nodes.set(key, nodes[key]));
             buildTealSelectionPrompt(
               story_nodes, game_state, start_node, story_nodes.get(start_node).options);
@@ -198,23 +198,28 @@
             startTeal(tealJson);
         }
 
-        function buildMenu() {
+       
+        async function buildMenu() {
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
             document.getElementById("teal-options").innerHTML = "";
             
-            const optionDivOne = document.createElement("div");
-            const optionDivTwo = document.createElement("div");
-            
-            optionDivOne.innerHTML = "Play Golem";
-            optionDivTwo.innerHTML = "Play Emberux";
+            const res = await fetch("/teals/");
+            const teal_files = await res.text();
+            const file_names = teal_files.match(/".*\.json"/gm);
 
-            optionDivOne.addEventListener("click", fetchAndStartTeal.bind(
-                null, "/teals/golem.teal.json"));
-            document.getElementById("teal-options").appendChild(optionDivOne);
+            for (var i in file_names) {
+              name = file_names[i].substring(1,file_names[i].length - 1);
 
-            optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
-                null, "/teals/emberux.teal.json"));
-            document.getElementById("teal-options").appendChild(optionDivTwo);
+              const optionDiv = document.createElement("div");
+              optionDiv.innerHTML = "Play " + name.split(".")[0];
+              optionDiv.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/"+ name));
+              document.getElementById("teal-options").appendChild(optionDiv);
+            }
+
+            // optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
+            //     null, "/teals/emberux.teal.json"));
+            // document.getElementById("teal-options").appendChild(optionDivTwo);
         }
 
         buildMenu();
