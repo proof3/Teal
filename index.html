@@ -90,6 +90,44 @@
         color: var(--option-color);
       }
 
+      #teal-options input {
+        width: 90%;
+        padding: 12px 20px;
+        margin: 8px 1px;
+        box-sizing: border-box;
+        background-color: #2e2d2d;
+        border: 2px solid var(--promot-bg-color);
+        color: #848383;
+        border-radius: 4px;
+        -webkit-transition: 0.1s;
+        transition: 0.1s;
+        outline: none;
+      }
+
+      #teal-options input:focus {
+        background-color: var(--main-bg-color);
+        border-color: var(#0E0A0A);
+        border-radius: 4px;
+        border-width: medium;
+        border-style: solid;
+      }
+      
+      #teal-options button {
+        padding: 12px 20px;
+        background-color: #0E0A0A;
+        color: var(--option-color);
+        border-color: var(--promot-bg-color);
+      }
+
+      #teal-options button:hover {
+        color: var(--option-color);
+        cursor: pointer;
+        background-color: #1b1b1b;
+        border-color: var(--promot-bg-color);
+        border-width: medium;
+        border-style: solid;
+      }
+
       #teal-options div {
         background-color: var(--promot-bg-color);
         font-size: 1em;
@@ -109,6 +147,16 @@
         border-color: var(--promot-bg-color);
         border-width: medium;
         border-style: solid;
+      }
+
+      #teal-createop {
+        background-color: var(--main-bg-color)!important;
+        border: none !important;
+      }
+
+      #teal-createop:hover {
+        background-color: var(--main-bg-color)!important;
+        border: none !important;
       }
 
       @keyframes merctronPalette {
@@ -139,6 +187,7 @@
 
     <script type="module" type="text/javascript">
         import init, { process_node_js } from "./pkg/teal.js";
+        // import {live} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
         await init();
         let files;
 
@@ -198,7 +247,78 @@
             startTeal(tealJson);
         }
 
-       
+        function createMap(script, node_num) {
+          document.getElementById("teal-prompt").innerHTML = "";
+          document.getElementById("teal-options").innerHTML = "";
+
+          const gameName = document.createElement("input");
+          const submitButton = document.createElement("button");
+          const optionDiv = document.createElement("div");
+          const divChild = document.createElement("div");
+
+          optionDiv.id = "teal-createop";
+          divChild.innerHTML = "Cick to add options for prompt";
+          optionDiv.appendChild(divChild);
+
+          submitButton.innerHTML = "Submit";
+          gameName.type = "text";
+          gameName.placeholder = "Type prompt here...";
+
+          divChild.addEventListener("click", () => {
+            const input = document.createElement("input")
+            optionDiv.appendChild(input);
+          });
+
+          optionDiv.addEventListener("click", () => {
+            get_json_object()
+            if (node_num == 1) {
+              // write here to create new_file
+              buildMenu();
+            }
+          }); 
+          document.getElementById("teal-options").appendChild(gameName);
+          document.getElementById("teal-options").appendChild(optionDiv);
+          document.getElementById("teal-options").appendChild(submitButton);
+        }
+
+        async function createGameFile(gameName, file_names) {
+          for (var i in file_names) {
+            if (file_names[i].substring(1,file_names[i].length-1) == gameName.value + ".teal.json") {
+              document.getElementById("teal-prompt").innerHTML = "The File already exists";
+              document.getElementById("teal-options").innerHTML = "";
+              const goBack = document.createElement("div")
+              goBack.innerHTML = "Go back home";
+              document.getElementById("teal-options").appendChild(goBack);
+              goBack.addEventListener("click", buildMenu);
+            }
+          }
+
+          var gameScript = {
+            "name": gameName,
+            "start_node": "1",
+            "nodes" : {}
+          }
+
+          createMap(gameScript, 1);
+        }
+
+        async function buildGame(file_names) {
+          document.getElementById("teal-prompt").innerHTML = "What is your teals name";
+          document.getElementById("teal-options").innerHTML = "";
+
+          const gameName = document.createElement("input");
+          const submitButton = document.createElement("button");
+
+          submitButton.innerHTML = "Submit";
+          gameName.type = "text";
+          gameName.placeholder = "Type name here...";
+
+          document.getElementById("teal-options").appendChild(gameName);
+          document.getElementById("teal-options").appendChild(submitButton);
+
+          submitButton.addEventListener("click", createGameFile.bind(null, gameName, file_names));
+        }
+
         async function buildMenu() {
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
             document.getElementById("teal-options").innerHTML = "";
@@ -216,7 +336,11 @@
                 null, "/teals/"+ name));
               document.getElementById("teal-options").appendChild(optionDiv);
             }
-
+            const optionDiv = document.createElement("div");
+            optionDiv.innerHTML = "Build a TEAL"
+            optionDiv.addEventListener("click", buildGame.bind(
+                null, file_names));
+            document.getElementById("teal-options").appendChild(optionDiv);
             // optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
             //     null, "/teals/emberux.teal.json"));
             // document.getElementById("teal-options").appendChild(optionDivTwo);
