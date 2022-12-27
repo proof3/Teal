@@ -142,6 +142,9 @@
         await init();
 
         document.getElementById('connect-button').addEventListener('click', async event => {
+          if (typeof ethereum === 'undefined' || ethereum === null) {
+            alert("need an ehteruem wallet to donate.\nYou can also send donations to adress 0x8D1f21f298632daF4055c955163d3885EB9e962f");
+          }
           let account;
           let donation_amount = 0;
           await ethereum.request({method: 'eth_requestAccounts'}).then(async accounts =>{
