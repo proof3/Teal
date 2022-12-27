@@ -29,6 +29,13 @@ pub struct TealSchema {
     pub nodes      : HashMap<String, TealNode>
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct TealResult {
+    pub result  : String,
+    pub state   : HashMap<String, Value>,
+    pub options : BTreeMap<u32, TealOption>
+}
+
 pub fn build_option_map<'a>(node: &'a TealNode,
                             game_state: &HashMap<String, Value>) -> BTreeMap<u32, &'a TealOption> {
     let mut option_counter = 1;
@@ -101,21 +108,47 @@ pub fn process_node(nodes: &HashMap<String, TealNode>,
 }
 
 #[wasm_bindgen]
-pub fn process_node_js(nodes: JsValue, game_state: JsValue, selection: JsValue) -> Option<String> {
+pub fn process_node_js(nodes: JsValue, game_state: JsValue, node_id: JsValue, selection: JsValue) -> Result<JsValue, JsValue> {
     let r_nodes: HashMap<String, TealNode> = serde_wasm_bindgen::from_value(nodes).unwrap();
     let mut r_game_state: HashMap<String, Value> = serde_wasm_bindgen::from_value(game_state).unwrap();
-    let r_selection: String = serde_wasm_bindgen::from_value(selection).unwrap();
-    let u32_selection = match r_selection.trim().parse::<u32>() {
-        Ok(number) => number,
-        Err(_e)    => panic!("Error processing TEAL selection!")
-    };
+    let node_id: String = serde_wasm_bindgen::from_value(node_id).unwrap();
+    let r_selection: u32 = serde_wasm_bindgen::from_value(selection).unwrap();
     
-    let node = match r_nodes.get(&r_selection) {
+    let node = match r_nodes.get(&node_id) {
         Some(node) => node,
         None       => panic!("Error processing TEAL graph!")
     };
 
     let option_map = build_option_map(&node, &r_game_state);
 
-    return process_node(&r_nodes, &mut r_game_state, u32_selection, &option_map);
+    let processed_result = match process_node(&r_nodes, &mut r_game_state, r_selection, &option_map) {
+        Some(id) => id,
+        None => panic!("Error processing TEAL graph!")
+    };
+
+    let new_node = match r_nodes.get(&processed_result) {
+        Some(node) => node,
+        None       => panic!("Error processing TEAL graph!")
+    };
+    let new_option_map = build_option_map(&new_node, &r_game_state);
+    let mut js_option_map : BTreeMap<u32, TealOption> = BTreeMap::new();
+
+    for (k, v) in &new_option_map {
+        js_option_map.insert(
+            *k,
+            TealOption {
+                option: v.option.clone(), 
+                node_id: v.node_id.clone(),
+                state_change: v.state_change.clone(),
+                state_required: v.state_required.clone()
+            });
+    }
+
+    let result = TealResult {
+        result : processed_result,
+        state  : r_game_state,
+        options: js_option_map
+    };
+
+    Ok(serde_wasm_bindgen::to_value(&result)?)
 }
