@@ -187,9 +187,20 @@
 
     <script type="module" type="text/javascript">
         import init, { process_node_js } from "./pkg/teal.js";
+        import {
+          fileOpen,
+          directoryOpen,
+          fileSave,
+          supported,
+        } from 'https://unpkg.com/browser-fs-access';
         // import {live} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
-        await init();
+        
         let files;
+        let files_names = ['/teals/golem.teal.json', '/teals/emberux.teal.json'];
+        let has_directory = false;
+        let node_count = 0;
+
+        await init();
 
         function tealLoop(story_nodes, game_state, node_id, node_selection, next) {
             console.log("Processing selection for node ", node_id, ", selection ", node_selection);
@@ -247,43 +258,98 @@
             startTeal(tealJson);
         }
 
-        function createMap(script, node_num) {
+
+        function addNode(prompt, script, currentNode, parentNode, isNew) {
+          const children = document.getElementById("teal-createop").childNodes;
+          var inputs = [];
+
+          children.forEach(child => {
+            if (child.tagName == 'INPUT') {
+              inputs.push({"option": child.value, "node_id" : child.id});
+            }
+          });
+
+          const stringNum = currentNode.toString();
+          let nodevalue = {
+            "prompt" : prompt.value,
+            "options" : inputs,
+            "parent" : parentNode
+          };
+
+          script[stringNum] = nodevalue;
+
+          if (!isNew) {
+            if (script[currentNode]["parent"] != null)
+            createMap(script, parentNode, script[parentNode.toString()]["parent"], isNew);
+          }
+          else createMap(script, this, currentNode, isNew);
+        }
+
+
+        function createMap(script, currentNode, parentNode, isNew) {
+
           document.getElementById("teal-prompt").innerHTML = "";
           document.getElementById("teal-options").innerHTML = "";
 
-          const gameName = document.createElement("input");
+          const gamePrompt = document.createElement("input");
           const submitButton = document.createElement("button");
           const optionDiv = document.createElement("div");
           const divChild = document.createElement("div");
-
           optionDiv.id = "teal-createop";
           divChild.innerHTML = "Cick to add options for prompt";
           optionDiv.appendChild(divChild);
-
           submitButton.innerHTML = "Submit";
-          gameName.type = "text";
-          gameName.placeholder = "Type prompt here...";
+          gamePrompt.type = "text";
+          gamePrompt.placeholder = "Type prompt here...";
+
+          if (!isNew) {
+            //fill prompt
+            console.log(script);
+            console.log(node_count);
+            gamePrompt.value = script[currentNode.toString()]["prompt"];
+            script[currentNode.toString()]["options"].forEach(child => { 
+              const input = document.createElement("input");
+              input.value = child["option"];
+              const buttonOne = document.createElement("button");
+              
+              buttonOne.innerHTML = 'Add story path for option';
+              optionDiv.appendChild(input);
+              if (child["node_id"] in script) buttonOne.addEventListener("click", createMap.bind(null, script,parseInt(child["node_id"]), currentNode, false));
+              else buttonOne.addEventListener("click", createMap.bind(null, script, parseInt(child["node_id"]), currentNode, true));
+              optionDiv.appendChild(buttonOne);
+            });
+          }
+          
 
           divChild.addEventListener("click", () => {
-            const input = document.createElement("input")
+            node_count++;
+            const input = document.createElement("input");
+            const buttonOne = document.createElement("button");
+            const optionNumber = node_count;
+
+            input.id = node_count.toString();
+            buttonOne.innerHTML = 'Add story path for option';
             optionDiv.appendChild(input);
+
+
+            buttonOne.addEventListener("click", addNode.bind(optionNumber, gamePrompt, script, currentNode, parentNode, true));
+            optionDiv.appendChild(buttonOne);
           });
 
-          optionDiv.addEventListener("click", () => {
-            get_json_object()
-            if (node_num == 1) {
-              // write here to create new_file
-              buildMenu();
+          submitButton.addEventListener("click", () => {
+            if (parentNode != null) {
+              addNode(gamePrompt, script, currentNode, parentNode, false);
             }
-          }); 
-          document.getElementById("teal-options").appendChild(gameName);
+          });
+
+          document.getElementById("teal-options").appendChild(gamePrompt);
           document.getElementById("teal-options").appendChild(optionDiv);
           document.getElementById("teal-options").appendChild(submitButton);
         }
 
-        async function createGameFile(gameName, file_names) {
+        function createGameFile(gameName, file_names) {
           for (var i in file_names) {
-            if (file_names[i].substring(1,file_names[i].length-1) == gameName.value + ".teal.json") {
+            if (file_names[i] == gameName.value + ".teal.json") {
               document.getElementById("teal-prompt").innerHTML = "The File already exists";
               document.getElementById("teal-options").innerHTML = "";
               const goBack = document.createElement("div")
@@ -293,16 +359,12 @@
             }
           }
 
-          var gameScript = {
-            "name": gameName,
-            "start_node": "1",
-            "nodes" : {}
-          }
-
-          createMap(gameScript, 1);
+          var gameScript = {};
+          node_count++;
+          createMap(gameScript, 1, null, true);
         }
 
-        async function buildGame(file_names) {
+        function buildGame(file_names) {
           document.getElementById("teal-prompt").innerHTML = "What is your teals name";
           document.getElementById("teal-options").innerHTML = "";
 
@@ -319,31 +381,85 @@
           submitButton.addEventListener("click", createGameFile.bind(null, gameName, file_names));
         }
 
-        async function buildMenu() {
+        async function openGameDirectory() {
+          if (has_directory) {
+            alert('You will only be able to see TEALS of the directory you rechoose');
+          }
+          
+          const options = {
+                // Set to `true` to recursively open files in all subdirectories,
+                // defaults to `false`.
+                //recursive: true,
+                // Suggested directory in which the file picker opens. A well-known directory, or a file or directory handle.
+                //startIn: 'downloads',
+                // By specifying an ID, the user agent can remember different directories for different IDs.
+                id: 'teals',
+                multiple: true,
+                // Callback to determine whether a directory should be entered, return `true` to skip.
+                skipDirectory: (entry) => entry.name[0] === '.',
+
+              };
+
+              files = await directoryOpen(options);
+              console.log(files);
+              let reader = new FileReader();
+
+              for (let index in files) {
+                const file = files[index];
+                file_names.push(file.name);
+                if (file.name ==  'golem.teal.json' || file.name ==  'emberux.teal.json') {
+                  alert("You cannot have a file called golem.teal.json or emberux.teal.json");
+                }
+                const newDiv = document.createElement("div");
+                newDiv.innerHTML = "Play " + file.name.split(".")[0];
+                reader.readAsText(file);
+
+                reader.onload = function() {
+                  console.log(reader.result);
+                };
+
+                reader.onerror = function() {
+                  console.log(reader.error);
+                };
+                //newDiv.addEventListener('click', startTeal.bind(JSON.parse(await files[index].get() ) ));
+
+              }
+        }
+
+        function buildMenu() {
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
             document.getElementById("teal-options").innerHTML = "";
             
-            const res = await fetch("/teals/");
-            const teal_files = await res.text();
-            const file_names = teal_files.match(/".*\.json"/gm);
-
-            for (var i in file_names) {
-              name = file_names[i].substring(1,file_names[i].length - 1);
-
-              const optionDiv = document.createElement("div");
-              optionDiv.innerHTML = "Play " + name.split(".")[0];
-              optionDiv.addEventListener("click", fetchAndStartTeal.bind(
-                null, "/teals/"+ name));
-              document.getElementById("teal-options").appendChild(optionDiv);
+            const optionDivOne = document.createElement("div");
+            const optionDivTwo = document.createElement("div");
+            const optionDivThree = document.createElement("div");
+            const optionOpenFiles = document.createElement("button");
+            
+            optionDivOne.innerHTML = "Play Golem";
+            optionDivTwo.innerHTML = "Play Emberux";
+            optionDivThree.innerHTML = "Build a TEAL"
+            if (!has_directory) {
+              optionOpenFiles.innerHTML = "Select directory with TEALs";
             }
-            const optionDiv = document.createElement("div");
-            optionDiv.innerHTML = "Build a TEAL"
-            optionDiv.addEventListener("click", buildGame.bind(
-                null, file_names));
-            document.getElementById("teal-options").appendChild(optionDiv);
-            // optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
-            //     null, "/teals/emberux.teal.json"));
-            // document.getElementById("teal-options").appendChild(optionDivTwo);
+            else {
+              optionOpenFiles.innerHTML = "Reselect directory with TEALs";
+            }
+            
+
+            optionDivOne.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/golem.teal.json"));
+            document.getElementById("teal-options").appendChild(optionDivOne);
+
+            optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
+                null, "/teals/emberux.teal.json"));
+            document.getElementById("teal-options").appendChild(optionDivTwo);
+            
+            optionDivThree.addEventListener("click", buildGame.bind(
+                null, files_names));
+            document.getElementById("teal-options").appendChild(optionDivThree);
+
+            optionOpenFiles.addEventListener("click", openGameDirectory.bind(null));
+            document.getElementById("teal-options").appendChild(optionOpenFiles);  
         }
 
         buildMenu();
