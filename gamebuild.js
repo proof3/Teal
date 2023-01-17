@@ -1,3 +1,10 @@
+import {
+  fileOpen,
+  directoryOpen,
+  fileSave,
+  supported,
+} from 'https://unpkg.com/browser-fs-access';
+
 export let files;
 export let files_names = ['/teals/golem.teal.json', '/teals/emberux.teal.json'];
 export let has_directory = false;
@@ -84,6 +91,13 @@ function addNode(prompt, currentNode, parentNode, isNew) {
       if (parentNode != null) {
         addNode(gamePrompt, currentNode, parentNode, false);
       }
+      else {
+        if (has_directory);
+        else {
+          alert("please choose a game directory");
+          openGameDirectory();
+        }
+      }
     });
 
     document.getElementById("teal-options").appendChild(gamePrompt);
@@ -122,4 +136,49 @@ function addNode(prompt, currentNode, parentNode, isNew) {
     document.getElementById("teal-options").appendChild(submitButton);
 
     submitButton.addEventListener("click", createGameFile.bind(null, gameName, file_names));
+  }
+
+  async function openGameDirectory() {
+    if (has_directory) {
+      alert('You will only be able to see TEALS of the directory you rechoose');
+    }
+    
+    const options = {
+          // Set to `true` to recursively open files in all subdirectories,
+          // defaults to `false`.
+          //recursive: true,
+          // Suggested directory in which the file picker opens. A well-known directory, or a file or directory handle.
+          //startIn: 'downloads',
+          // By specifying an ID, the user agent can remember different directories for different IDs.
+          id: 'teals',
+          multiple: true,
+          // Callback to determine whether a directory should be entered, return `true` to skip.
+          skipDirectory: (entry) => entry.name[0] === '.',
+
+        };
+
+        files = await directoryOpen(options);
+        console.log(files);
+        let reader = new FileReader();
+
+        for (let index in files) {
+          const file = files[index];
+          file_names.push(file.name);
+          if (file.name ==  'golem.teal.json' || file.name ==  'emberux.teal.json') {
+            alert("You cannot have a file called golem.teal.json or emberux.teal.json");
+          }
+          const newDiv = document.createElement("div");
+          newDiv.innerHTML = "Play " + file.name.split(".")[0];
+          reader.readAsText(file);
+
+          reader.onload = function() {
+            console.log(reader.result);
+          };
+
+          reader.onerror = function() {
+            console.log(reader.error);
+          };
+          newDiv.addEventListener('click', startTeal.bind(JSON.parse(await files[index].get() ) ));
+
+       }
   }

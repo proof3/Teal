@@ -187,14 +187,8 @@
 
     <script type="module" type="text/javascript">
         import init, { process_node_js } from "./pkg/teal.js";
-        import  {buildGame, files, files_names, has_directory, node_count} from "./gamebuild.js";
-        // import {
-        //   fileOpen,
-        //   directoryOpen,
-        //   fileSave,
-        //   supported,
-        // } from 'https://unpkg.com/browser-fs-access';
-        // import {live} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
+        import  {buildGame, files, files_names, has_directory, openGameDirectory} from "./gamebuild.js";
+        import {live} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js';
         
         
 
@@ -256,51 +250,6 @@
             startTeal(tealJson);
         }
 
-
-        async function openGameDirectory() {
-          if (has_directory) {
-            alert('You will only be able to see TEALS of the directory you rechoose');
-          }
-          
-          // const options = {
-          //       // Set to `true` to recursively open files in all subdirectories,
-          //       // defaults to `false`.
-          //       //recursive: true,
-          //       // Suggested directory in which the file picker opens. A well-known directory, or a file or directory handle.
-          //       //startIn: 'downloads',
-          //       // By specifying an ID, the user agent can remember different directories for different IDs.
-          //       id: 'teals',
-          //       multiple: true,
-          //       // Callback to determine whether a directory should be entered, return `true` to skip.
-          //       skipDirectory: (entry) => entry.name[0] === '.',
-
-          //     };
-
-          //     files = await directoryOpen(options);
-          //     console.log(files);
-          //     let reader = new FileReader();
-
-          //     for (let index in files) {
-          //       const file = files[index];
-          //       file_names.push(file.name);
-          //       if (file.name ==  'golem.teal.json' || file.name ==  'emberux.teal.json') {
-          //         alert("You cannot have a file called golem.teal.json or emberux.teal.json");
-          //       }
-          //       const newDiv = document.createElement("div");
-          //       newDiv.innerHTML = "Play " + file.name.split(".")[0];
-          //       reader.readAsText(file);
-
-          //       reader.onload = function() {
-          //         console.log(reader.result);
-          //       };
-
-          //       reader.onerror = function() {
-          //         console.log(reader.error);
-          //       };
-                //newDiv.addEventListener('click', startTeal.bind(JSON.parse(await files[index].get() ) ));
-
-           //   }
-        }
 
         function buildMenu() {
             document.getElementById("teal-prompt").innerHTML = "TEAL: A text adventure loader";
