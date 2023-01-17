@@ -71,6 +71,11 @@
         font-weight: bold;
       }
 
+      #donate-ui {
+        display: flex;
+        justify-content: flex-end;
+      }
+
       #teal-ui {
         margin-top: 1%;
         margin-left: 5%;
@@ -275,9 +280,9 @@
     <nav class="Nav">
       <a href="" id="navbar"> TEAL</a>
     </nav>
-    <div>
-      <button id='connect-button'>Donate ether from wallet</button>
-      <input id="donation-amount">
+    <div id='donate-ui'>
+      <button id='connect-button'>Donate ether</button>
+      <input id='donation-amount'>
     </div>
     <div id="teal-ui">
         <div id="teal-prompt"></div>
