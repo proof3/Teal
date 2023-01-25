@@ -263,11 +263,11 @@
             optionDivTwo.innerHTML = "Play Emberux";
 
             optionDivOne.addEventListener("click", fetchAndStartTeal.bind(
-                null, "/teals/golem.teal.json"));
+                null, window.location.href + "/teals/golem.teal.json"));
             document.getElementById("teal-options").appendChild(optionDivOne);
 
             optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
-                null, "/teals/emberux.teal.json"));
+                null, window.location.href + "/teals/emberux.teal.json"));
             document.getElementById("teal-options").appendChild(optionDivTwo);
         }
 
