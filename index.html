@@ -247,7 +247,8 @@
         }
 
         async function fetchAndStartTeal(tealFile) {
-            const res = await fetch(tealFile);
+            
+            const res = await fetch(window.location.href + tealFile);
             const tealJson = JSON.parse(await res.text());
             startTeal(tealJson);
         }
