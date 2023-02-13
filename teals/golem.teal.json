@@ -53,7 +53,8 @@
         "7": {
             "prompt": "You are the entering the rocky core of this island. A monolith in front of you has an opening to a large cave.",
             "options": [
-                { "option": "Nothing to see here. Head back.", "node_id": "5" }
+                { "option": "Nothing to see here. Head back.", "node_id": "5" },
+                { "option": "Enter the cave.", "node_id": "71" }
             ]
         },
         "8": {
@@ -96,14 +97,92 @@
             "prompt": "There are an assortment of items in the pile and strewn across the floor.",
             "options": [
                 { "option": "Pick up the map.", "node_id": "14", "state_change": { "map": true } },
+                { "option": "Pick up the torch.", "node_id": "15", "state_change": { "torch": true } },
                 { "option": "Exit the hut.", "node_id": "5" }
             ]
         },
         "14": {
             "prompt": "You have picked up the map.",
             "options": [
-                { "option": "Exit the hut.", "node_id": "5" }
+                { "option": "Exit the hut.", "node_id": "5" },
+                { "option": "Look at the pile of items.", "node_id": "13" }
             ]
+        },
+        "15": {
+            "prompt": "You have picked up the torch.",
+            "options": [
+                { "option": "Exit the hut.", "node_id": "5" },
+                { "option": "Look at the pile of items.", "node_id": "13" }
+            ]
+        },
+        "71": {
+            "prompt": "You are in a dark cave. Meandering without care will lead to a quick death in the darkness. Maybe finding a light of some kind will help.",
+            "options": [
+                { "option": "Nothing to see here. Head back.", "node_id": "7" },
+                {
+                  "option": "You have a torch, use it to light up the cave.",
+                  "state_required": { "torch": true },
+                  "node_id": "72"
+                }
+            ]
+        },
+        "72": {
+            "prompt": "A little distance into the cave you start to see strange carvings in the walls around you. You can't be sure but it looks like faces have been carved into rock. Ahead of you are different paths.",
+            "options": [
+                { "option": "This is unsettling. Head back and turn off the torch.", "node_id": "71" },
+                {
+                  "option": "You feel a draft from the passage in front of you. Head straight.",
+                  "state_required": { "torch": true },
+                  "node_id": "73"
+                },
+                {
+                  "option": "On your right, the light from the torch seems to disappear into a void. Move into the passage on the right.",
+                  "state_required": { "torch": true },
+                  "node_id": "74"
+                },
+                {
+                  "option": "On your left, the light from the torch seems to light up something that glints in the distance. Move into the passage on the left.",
+                  "state_required": { "torch": true },
+                  "node_id": "75"
+                }
+            ]
+        },
+        "73": {
+            "prompt": "You have arrived at a tranquil clearing in the middle of the cave system. You see the clear blue sky above you but the area is surrounded by rocky mounatins that contain the caves.",
+            "options": [
+                { "option": "Nothing to see here. Head back.", "node_id": "72" },
+                {
+                  "option": "There's a small pond ahead. Go ahead to explore.",
+                  "node_id": "731"
+                }
+            ]
+        },
+        "731": {
+            "prompt": "The pond is calm and there seem to be colorful fishes circling its perimeter. Every few seconds the fishes seems to assemble in patterns that resemble words. You can't help but see that they are saying to you: 'Beware of the treasure that binds you.'",
+            "options": [
+                { "option": "What does all of this mean? Head back.", "node_id": "72" }
+            ]
+        },
+        "74": {
+            "prompt": "You walk into the darkness on the right and arrive at a dead end with a Mural on it. It shows a creature reminiscent of the rock face in the cave puppeteering a person. All around this image is an assemblage of decadent treasures.",
+            "options": [
+                { "option": "This is... bizzare. Head back.", "node_id": "72" }
+            ]
+        },
+        "75": {
+            "prompt": "You walk toward the glinting and arrive in a room bearing its source. The walls of the room glitter with gold laced etchings. At the end of the room is a statue that has a face resembling the the images you've seen before. The statue is decorated with all sorts of precious stones and has sections that seem to be composed of solid gold.",
+            "options": [
+                { "option": "This is amazing. You are rich! Lift the statue and carry it back with you.", "node_id": "751" },
+                { "option": "Something is off. This seems too good to be true. Turn back.", "node_id": "752" }
+            ]
+        },
+        "751": {
+            "prompt": "As you lift up the statue, a shock runs through you and you fall back. 'My name is Yossele' says the quickly transforming statue, with leathery folds of skin transmuting from the gold on its face morphing into a sly smile. 'Your face speaks of the fear you feel right now. This will fade like it did for Balthazar. You will come to love me as I serve you. I am your slave, as you are mine.'",
+            "options": []
+        },
+        "752": {
+            "prompt": "As you turn and head back you lose consciousness. You wake up on the outskirts of the town you had arrived in as a treasure hunter. In your hand there seems to be a note: 'I suppose a short-lived independence is its own kind of reward. We could have done things together, you and I.'",
+            "options": []
         }
     }
 }
