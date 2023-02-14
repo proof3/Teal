@@ -232,6 +232,18 @@
             
             const optionDivOne = document.createElement("div");
             const optionDivTwo = document.createElement("div");
+            const gameEditor = document.createElement("div");
+
+            //input field and label to open file for game editor
+            const fileInput = document.createElement("input");
+            const fileLabel = document.createElement("label");
+            fileInput.type = "file";
+            fileInput.accept = ".json";
+            fileInput.style.visibility = "hidden";
+            fileLabel.innerHTML = "Edit Teal";
+
+            gameEditor.appendChild(fileLabel);
+            gameEditor.appendChild(fileInput);
             
             optionDivOne.innerHTML = "Play Golem";
             optionDivTwo.innerHTML = "Play Emberux";
@@ -243,6 +255,9 @@
             optionDivTwo.addEventListener("click", fetchAndStartTeal.bind(
                 null, "/teals/emberux.teal.json"));
             document.getElementById("teal-options").appendChild(optionDivTwo);
+
+            gameEditor.addEventListener('click', () => {fileInput.click();});
+            document.getElementById("teal-options").appendChild(gameEditor);
         }
         
         document.getElementById('connect-button').addEventListener('click', etherEvent);
