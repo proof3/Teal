@@ -1,27 +1,38 @@
 import Node from "./node.js";
 
+var editor;
+
 class GameEditor {
     nodes = {};
+    root = null;
     constructor(gameData) {
-        for (var num in gameData["nodes"]) {
-            this.createNode(num, gameData["nodes"][num]["prompt"]);
+        this.root = this.#createGameTree(gameData, gameData["start_node"], new Set([]));
+    }
+
+    #createGameTree(gameData, current_num, visited) {
+        if (visited.has(current_num)) {
+            return this.nodes[current_num];
         }
-        this.linkallNodes(gameData);
+
+        visited.add(current_num);
+        this.createNode(current_num, gameData["nodes"][current_num]["prompt"]);
+
+        let children = [];
+        let options = gameData["nodes"][current_num]["options"];
+        for (let option in options) {
+            let child_node = this.#createGameTree(gameData, options[option]["node_id"], visited, current_num);
+            let child_prompt = options[option]["option"];
+            children.push({prompt: child_prompt, node: child_node});
+            child_node.parents.push(this.nodes[current_num]);
+        }
+
+        
+        this.nodes[current_num].children = children;
+        return this.nodes[current_num];
     }
 
     createNode(num, text) {
         this.nodes[num] = new Node(text);
-    }
-
-    linkallNodes(gameData) {
-        for (var num in gameData["nodes"]) {
-            for (var opnum in gameData["nodes"][num]["options"]) {
-                let node_id = gameData["nodes"][num]["options"][opnum]["node_id"];
-                let prompt = gameData["nodes"][num]["options"][opnum]["option"];
-                //console.log(this.nodes[node_id]);
-                this.nodes[num].addChild(this.nodes[node_id], prompt);
-            }
-        }
     }
 
     linkNodes(parent, child, prompt) {
@@ -52,7 +63,5 @@ export function editGameFile() {
 }
 
 function createGameEditor(gameData) {
-    console.log(gameData);
-    const editor = new GameEditor(gameData);
-    console.log(editor.nodes);
+    editor = new GameEditor(gameData);
 }
