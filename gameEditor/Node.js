@@ -1,15 +1,14 @@
-class Node {
+export default class Node {
     text = '';
     children = [];
     parents = [];
-    constructor(text, children) {
+    constructor(text) {
         this.text = text;
-        this.children = children;
     }
 
     addChild(newNode, prompt) {
-        this.children.push((newNode, prompt));
-        newNode.parents.push(this, this.parents.length);
+        this.children.push({prompt: prompt, node: newNode});
+        newNode.parents.push(this);
     }
 
     changeText(newText) {

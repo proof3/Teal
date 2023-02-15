@@ -162,7 +162,8 @@
 
     <script type="module" type="text/javascript">
         import init, { process_node_js } from "./pkg/teal.js";
-        import {etherEvent} from "./ether.js"
+        import {etherEvent} from "./ether.js";
+        import {editGameFile} from "./gameEditor/gameEditor.js"
         await init();
 
         function tealLoop(story_nodes, game_state, node_id, node_selection, next) {
@@ -237,9 +238,12 @@
             //input field and label to open file for game editor
             const fileInput = document.createElement("input");
             const fileLabel = document.createElement("label");
+
             fileInput.type = "file";
             fileInput.accept = ".json";
             fileInput.style.visibility = "hidden";
+            fileInput.id = "game-file";
+            fileInput.addEventListener('change', editGameFile);
             fileLabel.innerHTML = "Edit Teal";
 
             gameEditor.appendChild(fileLabel);
@@ -256,7 +260,7 @@
                 null, "/teals/emberux.teal.json"));
             document.getElementById("teal-options").appendChild(optionDivTwo);
 
-            gameEditor.addEventListener('click', () => {fileInput.click();});
+            gameEditor.addEventListener('click', () => {fileInput.click()});
             document.getElementById("teal-options").appendChild(gameEditor);
         }
         
