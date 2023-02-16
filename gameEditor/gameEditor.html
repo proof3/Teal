@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Teal"
+    />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <style type="text/css">
+      :root {
+        --main-bg-color:   #262626;
+        --promot-bg-color: #0E0A0A;
+        --prompt-color: #44ffd1;
+        --option-color: #00a6fb;
+        --select-color: #ff6663;
+      }
+
+      body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      html, body {
+          height: 100%;
+          width: 100%;
+          font-family: Menlo, ui-monospace;
+          background-color: var(--main-bg-color);
+          display: flex;
+          flex-direction: column;
+      }
+
+
+
+      .Nav {
+        background-color:#0E0A0A;
+        text-align: center;
+        width: 100%;
+        min-height: 2.5em;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0px;
+      }
+
+      .Nav a {
+        font-size: 1.5em;
+        color:#fffaf2;
+      }
+
+      .Nav a:link {
+        text-decoration: none;
+      }
+
+      .Nav a:hover {
+        color: whitesmoke;
+        font-weight: bold;
+      }
+
+      #navtitle {
+        margin-left: 1em;
+      }
+
+      #donate-ui {
+        margin-right: 1em;
+      }
+
+      #teal-options {
+        margin-top: 3em;
+        margin-left: 3%;
+        color: var(--option-color);
+      }
+
+      #teal-options div {
+        background-color: var(--promot-bg-color);
+        font-size: 1em;
+        max-width: 94%;
+        padding: .5rem .5rem .5rem .5rem;
+        border-radius: .5rem;
+        margin-bottom: 0.2em;
+        border-width: medium;
+        border-style: solid;
+        border-color: var(--promot-bg-color);
+      }
+
+      #teal-options div:hover {
+        color: var(--select-color);
+        cursor: pointer;
+        background-color: var(--main-bg-color);
+        border-color: var(--promot-bg-color);
+        border-width: medium;
+        border-style: solid;
+      }
+
+      @keyframes merctronPalette {
+        0% {
+          color: #fffaf2;
+        }
+        25% {
+          color: #fffaf2;
+        }
+        50% {
+          color: #006e90;
+        }
+        75% {
+          color: #bf1363;
+        }
+        100% {
+          color: #fffaf2;
+        }
+      }
+
+      /* The typing effect */
+      @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+      }
+
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="module">
+        import {editGameFile} from "./gameEditor.js"
+        const newDiv = document.createElement("div");
+        const fileInput = document.createElement("input");
+        const fileLabel = document.createElement("label")
+    
+        fileInput.type = "file";
+        fileInput.accept = ".json";
+        fileInput.id = "game-file";
+        fileInput.style.visibility = "hidden";
+        fileInput.addEventListener('change', editGameFile);
+        
+        fileLabel.innerHTML = "Choose file to edit";
+
+        newDiv.id = "file-div";
+        newDiv.appendChild(fileLabel)
+        newDiv.appendChild(fileInput);
+        newDiv.addEventListener('click', () => {fileInput.click()});
+        
+        document.getElementById("teal-options").appendChild(newDiv);
+    </script>
+    <title>TEAL: A text adventure loader</title>
+</head>
+<body>
+  <nav class="Nav">
+    <a href="/" id="navtitle">TEAL</a>
+    <div id='donate-ui'>
+      <button id='connect-button'>Donate Eth!</button>
+      <input placeholder='Eth Amount' id='donation-amount'>
+  </div>
+  </nav>
+  <div id="teal-ui">
+      <div id="teal-options"></div>
+      <svg id="gametree-svg" width = "4000" style="display: flex;">
+        <!-- <rect width="1000" rx="20" ry="20" height="100" fill="#44ffd1"> </rect>
+        <line x1="0" y1="0" x2="200" y2="200" stroke="black"></line> -->
+      </svg>
+  </div>
+</body>
+</html>

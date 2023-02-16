@@ -49,8 +49,12 @@ class GameEditor {
 }
 
 export function editGameFile() {
+
     const fileInput = document.getElementById("game-file");
     const file = fileInput.files[0];
+
+    const fileDiv = document.getElementById("file-div");
+    fileDiv.parentNode.removeChild(fileDiv);
 
     var reader = new FileReader();
     reader.readAsText(file);
@@ -58,10 +62,27 @@ export function editGameFile() {
     reader.onload = readerEvent => {
         var gameData = readerEvent.target.result;
         createGameEditor(JSON.parse(gameData));
+        createBlob();
     }
 
 }
 
 function createGameEditor(gameData) {
     editor = new GameEditor(gameData);
+}
+
+function createBlob() {
+    const nodeUI = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    const attributes = {
+        width:"1000",
+        rx:"20",
+        ry:"20",
+        height:"100",
+        fill:"#44ffd1"
+    };
+    for (let attribute in attributes) {
+        nodeUI.setAttributeNS(null, attribute, attributes[attribute]);
+    }
+    document.getElementById("gametree-svg").appendChild(nodeUI);
+    //const Buble = document.createElement('div');
 }
