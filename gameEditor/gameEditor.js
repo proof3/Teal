@@ -62,7 +62,7 @@ export function editGameFile() {
     reader.onload = readerEvent => {
         var gameData = readerEvent.target.result;
         createGameEditor(JSON.parse(gameData));
-        createBlob();
+        visualize();
     }
 
 }
@@ -71,18 +71,28 @@ function createGameEditor(gameData) {
     editor = new GameEditor(gameData);
 }
 
-function createBlob() {
-    const nodeUI = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    const attributes = {
-        width:"1000",
-        rx:"20",
-        ry:"20",
-        height:"100",
-        fill:"#44ffd1"
-    };
-    for (let attribute in attributes) {
-        nodeUI.setAttributeNS(null, attribute, attributes[attribute]);
+function visualize() {
+    for (let key in editor.nodes) {
+        visualizeNodes(editor.nodes[key]);
     }
-    document.getElementById("gametree-svg").appendChild(nodeUI);
-    //const Buble = document.createElement('div');
+}
+
+function visualizeNodes(node) {
+    //const nodeUI = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    
+    
+    var svg = d3.select("#teal-ui").append("svg").attr("width", "100%").attr("height", 100);
+    svg.append('rect')
+        .attr("fill", "red")
+        .attr('stroke', 'black')
+        .attr('width', 200)
+        .attr('height', 50)
+        .attr('x', "50%")
+        .attr("transform", "translate(-100,0)")
+        .attr("style", "display:flex; flex-direction: space-between;");
+
+    svg.append('text')
+        .attr('x', "50%")
+        .attr("transform", "translate(-100,50)")
+        .text(node.text);
 }
