@@ -1,9 +1,11 @@
 export default class Node {
     text = '';
+    num;
     children = [];
     parents = [];
-    constructor(text) {
+    constructor(text, num) {
         this.text = text;
+        this.num = num;
     }
 
     addChild(newNode, prompt) {

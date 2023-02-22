@@ -32,7 +32,7 @@ class GameEditor {
     }
 
     createNode(num, text) {
-        this.nodes[num] = new Node(text);
+        this.nodes[num] = new Node(text, num);
     }
 
     linkNodes(parent, child, prompt) {
@@ -62,7 +62,7 @@ export function editGameFile() {
     reader.onload = readerEvent => {
         var gameData = readerEvent.target.result;
         createGameEditor(JSON.parse(gameData));
-        visualize();
+        visualize(editor.root);
     }
 
 }
@@ -71,28 +71,46 @@ function createGameEditor(gameData) {
     editor = new GameEditor(gameData);
 }
 
-function visualize() {
-    for (let key in editor.nodes) {
-        visualizeNodes(editor.nodes[key]);
+
+function visualize(root) {
+    let visited = new Set();
+
+    visualizeNode(root, "#depth0");
+    visited.add(root.num);
+
+    for (let keyOne in root.children) {
+        let child = root.children[keyOne]["node"];
+        if (visited.has(child.num)) {
+            continue;
+        }
+
+        visualizeNode(child, "#depth1");
+        visited.add(child.num);
+        for(let keyTwo in child.children) {
+            if (visited.has(child.children[keyTwo]["node"].num)) {
+                continue;
+            }
+
+            visualizeNode(child.children[keyTwo]["node"], "#depth2");
+            visited.add(child.children[keyTwo]["node"].num);
+        }
     }
+
+    
 }
 
-function visualizeNodes(node) {
-    //const nodeUI = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    
-    
-    var svg = d3.select("#teal-ui").append("svg").attr("width", "100%").attr("height", 100);
+function visualizeNode(node, depthId) {
+    var svg = d3.select(depthId).append("svg").attr("viewBox", "0 0 200 100").attr("style", "max-height: 400px; max-width:200px;");
     svg.append('rect')
-        .attr("fill", "red")
+        .attr("fill", "black")
         .attr('stroke', 'black')
         .attr('width', 200)
         .attr('height', 50)
-        .attr('x', "50%")
-        .attr("transform", "translate(-100,0)")
-        .attr("style", "display:flex; flex-direction: space-between;");
+        .attr("rx", "10%")
+        .attr("ry", "10%");
 
     svg.append('text')
-        .attr('x', "50%")
-        .attr("transform", "translate(-100,50)")
-        .text(node.text);
+        .attr("transform", "translate(90,30)")
+        .attr("fill", "#00a6fb")
+        .text(node.num);
 }
