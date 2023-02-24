@@ -74,43 +74,92 @@ function createGameEditor(gameData) {
 
 function visualize(root) {
     let visited = new Set();
+    d3.select("#teal-ui").append("svg").attr("viewBox", "0 0 2000 2000").attr("id", "editor-canvas");
 
-    visualizeNode(root, "#depth0");
-    visited.add(root.num);
+    var rootSvg = visualizeNode(root);
+    visited.add(root.num, "50");
+    var dpOneSvg = [];
+    var dpTwoSvg = [];
 
+    
     for (let keyOne in root.children) {
         let child = root.children[keyOne]["node"];
         if (visited.has(child.num)) {
             continue;
         }
 
-        visualizeNode(child, "#depth1");
-        visited.add(child.num);
+        dpOneSvg.push(visualizeNode(child, "150"));
         for(let keyTwo in child.children) {
             if (visited.has(child.children[keyTwo]["node"].num)) {
                 continue;
             }
 
-            visualizeNode(child.children[keyTwo]["node"], "#depth2");
+            dpTwoSvg.push(visualizeNode(child.children[keyTwo]["node"], "300"));
             visited.add(child.children[keyTwo]["node"].num);
         }
     }
 
+    // translate all created nodes to correct position and add arrows
+    translateNodes(rootSvg, dpOneSvg, dpTwoSvg);
     
 }
 
-function visualizeNode(node, depthId) {
-    var svg = d3.select(depthId).append("svg").attr("viewBox", "0 0 200 100").attr("style", "max-height: 400px; max-width:200px;");
+function visualizeNode(node, yVal) {
+    var g = d3.select("#editor-canvas").append("g").attr("id", node.num);
+    var svg = g.append("svg").attr("width" , "200").attr("height", "60").attr("y", yVal);
     svg.append('rect')
         .attr("fill", "black")
         .attr('stroke', 'black')
         .attr('width', 200)
         .attr('height', 50)
         .attr("rx", "10%")
-        .attr("ry", "10%");
+        .attr("ry", "10%")
 
     svg.append('text')
         .attr("transform", "translate(90,30)")
         .attr("fill", "#00a6fb")
         .text(node.num);
+
+    return g;
+}
+
+
+function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
+    rootSvg.attr("transform", "translate(900 0)");
+    
+    const minTransOne = (2000/dpOneSvg.length);
+    var translation = minTransOne - ((2000/dpOneSvg.length)/2);
+    for(let elem of dpOneSvg) {
+        elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
+        drawArrow({x: 1000, y: 50}, {x: (translation), y: elem.node().getBBox().y});
+        translation+= minTransOne;
+    }
+
+    const minTransTwo = (2000/dpTwoSvg.length) - ((2000/dpTwoSvg.length)/2);
+    translation = minTransTwo;
+    for(let elem of dpTwoSvg) {
+        elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
+        translation+= minTransOne;
+    }
+}
+
+function drawArrow(parent, child) {
+
+    const link = d3
+        .linkVertical()
+        .x(d => d.x)
+        .y(d => d.y)({
+        source: parent,
+        target: child
+    });
+
+    var svg = d3.select("#editor-canvas");
+
+    svg
+    .append('path')
+    .attr('d', link)
+    .attr('stroke', 'black')
+    .attr('stroke-width', 3)
+    .attr('fill', 'none');
+    
 }
