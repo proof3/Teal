@@ -129,9 +129,12 @@ function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
     
     const minTransOne = (2000/dpOneSvg.length);
     var translation = minTransOne - ((2000/dpOneSvg.length)/2);
+    let dpOneCords = {}
     for(let elem of dpOneSvg) {
         elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
-        drawArrow({x: 1000, y: 50}, {x: (translation), y: elem.node().getBBox().y});
+        drawArrow({x: 1000, y: 50}, {x: translation, y: elem.node().getBBox().y});
+
+        dpOneCords[elem.attr("id")] = {x: translation, y: elem.node().getBBox().y + 50}
         translation+= minTransOne;
     }
 
@@ -139,6 +142,12 @@ function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
     translation = minTransTwo;
     for(let elem of dpTwoSvg) {
         elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
+        console.log(editor.nodes[elem.attr("id")]);
+        for (parent of editor.nodes[elem.attr("id")].parents) {
+            if (dpOneCords[parent.num] == undefined) continue;
+            drawArrow({x: dpOneCords[parent.num].x, y: dpOneCords[parent.num].y}, {x: translation, y: elem.node().getBBox().y});
+        }
+
         translation+= minTransOne;
     }
 }
