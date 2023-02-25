@@ -105,7 +105,7 @@ function visualize(root) {
 }
 
 function visualizeNode(node, yVal) {
-    var g = d3.select("#editor-canvas").append("g").attr("id", node.num);
+    var g = d3.select("#editor-canvas").append("g").attr("id", node.num).attr("class", "node");
     var svg = g.append("svg").attr("width" , "200").attr("height", "60").attr("y", yVal);
     svg.append('rect')
         .attr("fill", "black")
@@ -123,8 +123,14 @@ function visualizeNode(node, yVal) {
     return g;
 }
 
-
+/* 
+    This function takes svg elements corresponding to depths 0-2 and translates
+    the nodes so that they are spaced evenly from the center at a given depth.
+    It calculates spacing depending on the number of elements at any depth.
+    It only translates the x cordinates as the y coordinates are fixed.
+*/
 function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
+    //the root is translated to the middle
     rootSvg.attr("transform", "translate(900 0)");
     
     const minTransOne = (2000/dpOneSvg.length);
@@ -165,10 +171,10 @@ function drawArrow(parent, child) {
     var svg = d3.select("#editor-canvas");
 
     svg
-    .append('path')
-    .attr('d', link)
-    .attr('stroke', 'black')
-    .attr('stroke-width', 3)
-    .attr('fill', 'none');
+        .append('path')
+        .attr('d', link)
+        .attr('stroke', 'black')
+        .attr('stroke-width', 3)
+        .attr('fill', 'none');
     
 }
