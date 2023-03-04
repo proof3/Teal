@@ -56,6 +56,8 @@ export function editGameFile() {
     const fileDiv = document.getElementById("file-div");
     fileDiv.parentNode.removeChild(fileDiv);
 
+    d3.select("#teal-options").remove();
+
     var reader = new FileReader();
     reader.readAsText(file);
 
@@ -68,16 +70,17 @@ export function editGameFile() {
 }
 
 function createGameEditor(gameData) {
+    
     editor = new GameEditor(gameData);
 }
 
 
 function visualize(root) {
     let visited = new Set();
-    d3.select("#teal-ui").append("svg").attr("viewBox", "0 0 2000 2000").attr("id", "editor-canvas");
+    d3.select("#teal-ui").append("svg").attr("viewBox", "0 0 2000 800").attr("id", "editor-canvas");
 
-    var rootSvg = visualizeNode(root);
-    visited.add(root.num, "50");
+    var rootSvg = visualizeNode(root, "100");
+    visited.add(root.num);
     var dpOneSvg = [];
     var dpTwoSvg = [];
 
@@ -88,13 +91,14 @@ function visualize(root) {
             continue;
         }
 
-        dpOneSvg.push(visualizeNode(child, "150"));
+        dpOneSvg.push(visualizeNode(child, "200"));
+        visited.add(child.num);
         for(let keyTwo in child.children) {
             if (visited.has(child.children[keyTwo]["node"].num)) {
                 continue;
             }
 
-            dpTwoSvg.push(visualizeNode(child.children[keyTwo]["node"], "300"));
+            dpTwoSvg.push(visualizeNode(child.children[keyTwo]["node"], "350"));
             visited.add(child.children[keyTwo]["node"].num);
         }
     }
@@ -116,9 +120,59 @@ function visualizeNode(node, yVal) {
         .attr("ry", "10%")
 
     svg.append('text')
-        .attr("transform", "translate(90,30)")
+        .attr("transform", "translate(18,30)")
         .attr("fill", "#00a6fb")
-        .text(node.num);
+        .attr("font-size", "13")
+        .text(`${node.num}: ${node.text.substring(0,15)} ...`);
+    
+    g.on("click", function() {
+        // need to display details of this story node.
+        const nodeNum = d3.select(this).attr("id");
+        const svg = document.getElementById("editor-canvas");
+        svg.parentNode.removeChild(svg);
+
+        const tealOp = d3.select("#teal-ui").attr("id", "teal-options");
+
+        tealOp.append("svg")
+            .attr("width" , "100")
+            .attr("height", "30")
+            .append("text")
+            .attr("y", "25")
+            .attr("x", "10")
+            .text("Prompt:")
+            .attr("font-size", "22")
+            .attr("fill", "#44ffd1");
+        
+        tealOp.append("br");
+
+        tealOp.append("input")
+            .attr("class", "node-view")
+            .attr("type", "text")
+            .attr("value", editor.nodes[nodeNum].text);
+
+        tealOp.append("br");
+
+        tealOp.append("svg")
+            .attr("width" , "110")
+            .attr("height", "30")
+            .append("text")
+            .attr("y", "25")
+            .attr("x", "10")
+            .text("Options:")
+            .attr("font-size", "22")
+            .attr("fill", "#44ffd1");
+
+        tealOp.append("br");
+        
+        for (let child of editor.nodes[nodeNum].children) {
+            tealOp.append("input")
+            .attr("class", "node-view")
+            .attr("id", child.nodeNum)
+            .attr("type", "text")
+            .attr("value", child.prompt);
+        }
+
+    })
 
     return g;
 }
@@ -138,7 +192,7 @@ function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
     let dpOneCords = {}
     for(let elem of dpOneSvg) {
         elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
-        drawArrow({x: 1000, y: 50}, {x: translation, y: elem.node().getBBox().y});
+        drawArrow({x: 1000, y: 150}, {x: translation, y: elem.node().getBBox().y});
 
         dpOneCords[elem.attr("id")] = {x: translation, y: elem.node().getBBox().y + 50}
         translation+= minTransOne;
@@ -148,9 +202,8 @@ function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
     translation = minTransTwo;
     for(let elem of dpTwoSvg) {
         elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
-        console.log(editor.nodes[elem.attr("id")]);
         for (parent of editor.nodes[elem.attr("id")].parents) {
-            if (dpOneCords[parent.num] == undefined) continue;
+            if (dpOneCords[parent.num] === undefined) continue;
             drawArrow({x: dpOneCords[parent.num].x, y: dpOneCords[parent.num].y}, {x: translation, y: elem.node().getBBox().y});
         }
 
