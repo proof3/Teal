@@ -72,45 +72,56 @@ export function editGameFile() {
 function createGameEditor(gameData) {
     
     editor = new GameEditor(gameData);
+    console.log(editor);
 }
 
 
 function visualize(root) {
-    let visited = new Set();
+
     d3.select("#teal-ui").append("svg").attr("viewBox", "0 0 2000 800").attr("id", "editor-canvas");
 
-    var rootSvg = visualizeNode(root, "100");
-    visited.add(root.num);
-    var dpOneSvg = [];
-    var dpTwoSvg = [];
+    let visited = new Set();
+    var dpOne = [];
+    var dpTwo = [];
 
-    
-    for (let keyOne in root.children) {
-        let child = root.children[keyOne]["node"];
-        if (visited.has(child.num)) {
+    visited.add(root.num);
+    for (var child of root.children) {
+        if (visited.has(child.node.num)) {
             continue;
         }
 
-        dpOneSvg.push(visualizeNode(child, "200"));
-        visited.add(child.num);
-        for(let keyTwo in child.children) {
-            if (visited.has(child.children[keyTwo]["node"].num)) {
+        dpOne.push(child.node.num);
+        for(let child2 of child.node.children) {
+            if (visited.has(child2.node.num)) {
                 continue;
             }
 
-            dpTwoSvg.push(visualizeNode(child.children[keyTwo]["node"], "350"));
-            visited.add(child.children[keyTwo]["node"].num);
+            dpTwo.push(child2.node.num);
+            visited.add(child2.node.num);
         }
     }
 
-    // translate all created nodes to correct position and add arrows
-    translateNodes(rootSvg, dpOneSvg, dpTwoSvg);
-    
+    // created nodes at their positions
+    visualizeNode(root, "100", "900");
+    drawNodesAtDepth(dpOne, "200");
+    drawNodesAtDepth(dpTwo, "300");
+
+    const rootsvg = d3.select(`[id="${root.num}"]`);
+    //draw arrows from root to depthOne
+    for (var child of root.children) {
+        let elem = d3.select(`[id="${child.node.num}"]`);
+        drawArrow(rootsvg, elem);
+        for (var child2 of child.node.children) {
+            let childSvg = d3.select(`[id="${child2.node.num}"]`);
+            drawArrow(elem, childSvg);
+        }
+    }
+
 }
 
-function visualizeNode(node, yVal) {
+function visualizeNode(node, yVal, xVal) {
     var g = d3.select("#editor-canvas").append("g").attr("id", node.num).attr("class", "node");
-    var svg = g.append("svg").attr("width" , "200").attr("height", "60").attr("y", yVal);
+    var svg = g.append("svg").attr("width" , "200").attr("height", "60").attr("y", yVal).attr("x", xVal);
     svg.append('rect')
         .attr("fill", "black")
         .attr('stroke', 'black')
@@ -167,64 +178,70 @@ function visualizeNode(node, yVal) {
         for (let child of editor.nodes[nodeNum].children) {
             tealOp.append("input")
             .attr("class", "node-view")
-            .attr("id", child.nodeNum)
+            .attr("id", child.node.num)
             .attr("type", "text")
             .attr("value", child.prompt);
         }
 
-    })
-
-    return g;
+    });
 }
 
 /* 
-    This function takes svg elements corresponding to depths 0-2 and translates
+    This function takes svg elements corresponding to depths 0-2 and draws
     the nodes so that they are spaced evenly from the center at a given depth.
     It calculates spacing depending on the number of elements at any depth.
-    It only translates the x cordinates as the y coordinates are fixed.
 */
-function translateNodes(rootSvg, dpOneSvg, dpTwoSvg) {
+function drawNodesAtDepth(nodesAtDepth, yVal) {
     //the root is translated to the middle
-    rootSvg.attr("transform", "translate(900 0)");
     
-    const minTransOne = (2000/dpOneSvg.length);
-    var translation = minTransOne - ((2000/dpOneSvg.length)/2);
-    let dpOneCords = {}
-    for(let elem of dpOneSvg) {
-        elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
-        drawArrow({x: 1000, y: 150}, {x: translation, y: elem.node().getBBox().y});
+    const minTransOne = (2000/nodesAtDepth.length);
+    var x = minTransOne - ((2000/nodesAtDepth.length)/2);
+    var svgs = [];
 
-        dpOneCords[elem.attr("id")] = {x: translation, y: elem.node().getBBox().y + 50}
-        translation+= minTransOne;
+    for (var nodeNum of nodesAtDepth) {
+        svgs.push(visualizeNode(editor.nodes[nodeNum], yVal, (x - 100).toString()));
+        x += minTransOne;
     }
-
-    const minTransTwo = (2000/dpTwoSvg.length) - ((2000/dpTwoSvg.length)/2);
-    translation = minTransTwo;
-    for(let elem of dpTwoSvg) {
-        elem.attr("transform", "translate("+ (translation - 100).toString() + " 0)");
-        for (parent of editor.nodes[elem.attr("id")].parents) {
-            if (dpOneCords[parent.num] === undefined) continue;
-            drawArrow({x: dpOneCords[parent.num].x, y: dpOneCords[parent.num].y}, {x: translation, y: elem.node().getBBox().y});
-        }
-
-        translation+= minTransOne;
-    }
+    return svgs;
 }
 
-function drawArrow(parent, child) {
+function drawArrow(root, child) {
+
+    const parent = {x: root.node().getBBox().x + 100 , y: root.node().getBBox().y + 50};
+    const _child = {x: child.node().getBBox().x + 100, y: child.node().getBBox().y};
+    const svg = d3.select("#editor-canvas");
+
+    //check if parent is below child
+    if (parent.y > _child.y) {
+
+        const curve = d3.line().curve(d3.curveNatural);
+        var points;
+
+
+        if (parent.x > _child.x) 
+            points = [[parent.x, parent.y], [parent.x + 200,  parent.y + 10], [parent.x + 200, _child.y - 10], [_child.x , _child.y - 50], [_child.x, _child.y]]; 
+        else 
+            points = [[parent.x, parent.y], [parent.x - 200,  parent.y + 10], [_child.x, _child.y]];
+            
+
+        svg.append('path')
+            .attr('d', curve(points))
+            .attr('stroke', 'black')
+            .attr('stroke-width', 3)
+            .attr('fill', 'none');
+
+        return;
+    }
 
     const link = d3
         .linkVertical()
         .x(d => d.x)
         .y(d => d.y)({
         source: parent,
-        target: child
+        target: _child
     });
 
-    var svg = d3.select("#editor-canvas");
-
-    svg
-        .append('path')
+    svg.append('path')
         .attr('d', link)
         .attr('stroke', 'black')
         .attr('stroke-width', 3)
