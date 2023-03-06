@@ -3,7 +3,7 @@
 export async function etherEvent() {
 
     if (typeof ethereum === 'undefined' || ethereum === null) {
-      alert("need an ehteruem wallet to donate.\nYou can also send donations to adress 0x8D1f21f298632daF4055c955163d3885EB9e962f");
+      alert("need an etheruem wallet to donate.\nYou can also send donations to adress 0x8D1f21f298632daF4055c955163d3885EB9e962f");
     }
 
     let account;
@@ -22,7 +22,7 @@ export async function etherEvent() {
 
     });
 
-    if (donation_amount == 0) {
+    if (donation_amount === 0) {
       alert("you cannot donate 0 ETH");
       return;
     }
@@ -48,7 +48,7 @@ export async function etherEvent() {
     
     let getReceipt = () => {
       return ethereum.request({method: 'eth_getTransactionReceipt', params:[txhash]}).then(confirmation => {
-          if (confirmation != null) {
+          if (confirmation !== null) {
             return 'confirmed';
           }
           else return getReceipt(txhash);

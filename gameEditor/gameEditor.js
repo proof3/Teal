@@ -3,9 +3,9 @@ import Node from "./node.js";
 var editor;
 
 class GameEditor {
-    nodes = {};
-    root = null;
+    
     constructor(gameData) {
+        this.nodes = {}
         this.root = this.#createGameTree(gameData, gameData["start_node"], new Set([]));
     }
 
@@ -20,6 +20,7 @@ class GameEditor {
         let children = [];
         let options = gameData["nodes"][current_num]["options"];
         for (let option in options) {
+
             let child_node = this.#createGameTree(gameData, options[option]["node_id"], visited, current_num);
             let child_prompt = options[option]["option"];
             children.push({prompt: child_prompt, node: child_node});
@@ -86,12 +87,14 @@ function visualize(root) {
 
     visited.add(root.num);
     for (var child of root.children) {
+
         if (visited.has(child.node.num)) {
             continue;
         }
 
         dpOne.push(child.node.num);
         for(let child2 of child.node.children) {
+
             if (visited.has(child2.node.num)) {
                 continue;
             }
@@ -109,9 +112,11 @@ function visualize(root) {
     const rootsvg = d3.select(`[id="${root.num}"]`);
     //draw arrows from root to depthOne
     for (var child of root.children) {
+
         let elem = d3.select(`[id="${child.node.num}"]`);
         drawArrow(rootsvg, elem);
         for (var child2 of child.node.children) {
+
             let childSvg = d3.select(`[id="${child2.node.num}"]`);
             drawArrow(elem, childSvg);
         }
@@ -137,6 +142,7 @@ function visualizeNode(node, yVal, xVal) {
         .text(`${node.num}: ${node.text.substring(0,15)} ...`);
     
     g.on("click", function() {
+
         // need to display details of this story node.
         const nodeNum = d3.select(this).attr("id");
         const svg = document.getElementById("editor-canvas");
@@ -176,6 +182,7 @@ function visualizeNode(node, yVal, xVal) {
         tealOp.append("br");
         
         for (let child of editor.nodes[nodeNum].children) {
+
             tealOp.append("input")
             .attr("class", "node-view")
             .attr("id", child.node.num)
@@ -196,15 +203,19 @@ function drawNodesAtDepth(nodesAtDepth, yVal) {
     
     const minTransOne = (2000/nodesAtDepth.length);
     var x = minTransOne - ((2000/nodesAtDepth.length)/2);
-    var svgs = [];
+    const svgs = [];
 
     for (var nodeNum of nodesAtDepth) {
+
         svgs.push(visualizeNode(editor.nodes[nodeNum], yVal, (x - 100).toString()));
         x += minTransOne;
     }
     return svgs;
 }
 
+/*
+    function draws an arrow from one node to the other
+*/
 function drawArrow(root, child) {
 
     const parent = {x: root.node().getBBox().x + 100 , y: root.node().getBBox().y + 50};
@@ -219,9 +230,11 @@ function drawArrow(root, child) {
 
 
         if (parent.x > _child.x) 
-            points = [[parent.x, parent.y], [parent.x + 200,  parent.y + 10], [parent.x + 200, _child.y - 10], [_child.x , _child.y - 50], [_child.x, _child.y]]; 
+            points = [[parent.x, parent.y], [parent.x + 200,  parent.y + 10] +
+                      [parent.x + 200, _child.y - 10], [_child.x , _child.y - 50], [_child.x, _child.y]]; 
         else 
-            points = [[parent.x, parent.y], [parent.x - 200,  parent.y + 10], [_child.x, _child.y]];
+            points = [[parent.x, parent.y], [parent.x - 200,  parent.y + 10] +
+                      [parent.x - 200, _child.y - 10], [_child.x , _child.y - 50], [_child.x, _child.y]];
             
 
         svg.append('path')
